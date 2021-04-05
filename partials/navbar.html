@@ -1,0 +1,11 @@
+<div ng-controller="NavbarController">
+    <div class="navbar-header">
+        <a class="navbar-brand" ui-sref="root.dashboard" style="padding-top:9px;padding-bottom:9px;padding-left:20px">
+            <img src="/images/logo.png" alt="" style="height:27px">
+        </a>
+    </div>
+
+    <div class="nav navbar-nav navbar-right" ng-show="SharedService.isAuthenticated()" style="padding-top:13px;padding-bottom:13px!important;">
+        <span class="text-xs font-weight-bold text-white" ng-click="onLogoutClicked()" style="cursor: pointer;" title="Logout"><i class="icon-switch2 px-2" ></i>Logout</span>
+    </div>
+</div>
