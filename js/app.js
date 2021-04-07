@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('Dashboard', ['ui.router']);
+var app = angular.module('Dashboard', ['datatables', 'ui.router']);
 
 // Write debug to console.log
 var DEBUG = (function () {
@@ -66,6 +66,24 @@ app.factory('SharedService', function ($rootScope) {
 
     };
 });
+
+//
+// Background service that may be executed before controllers are loaded
+//
+app.factory('BackgroundService', function ($rootScope) {
+    DEBUG.log("BackgroundService init");
+
+    var warrantEstimatedPrices;
+    warrantEstimatedPrices = {
+        CFPT2016: 84000,
+    }
+    return {
+        getWarrantEstimatedPrices: function () {
+            return warrantEstimatedPrices;
+        },
+    };
+});
+
 
 app.config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');

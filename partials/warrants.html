@@ -1,12 +1,86 @@
+<style>
+  tr.shown a {
+    color: orange;
+  }
+  .green {
+    color: green;
+  }
+</style>
+
 <div id="page-wrapper" ng-controller="WarrantsController">
-    <div class="page-header page-header-default">
-        <div class="panel panel-primary dropzone">
-            <ul id="breadcrumb" class="breadcrumb">
-                <li class="active">
-                    <a href="#"><i class="icon-home2"></i></a>
-                </li>
-            </ul>
-        </div>
+  <div class="page-header page-header-default">
+    <div class="panel panel-primary dropzone">
+      <ul id="breadcrumb" class="breadcrumb">
+        <li class="active">
+          <a href="#"><i class="icon-home2"></i></a>
+        </li>
+      </ul>
     </div>
-    <div class="row"></div>
+  </div>
+  <div class="row"></div>
+  <div class="container">
+    <h1></h1>
+    <table class="table table-striped table-bordered" style="width:100%" datatable="ng" dt-options="vm.dtOptions"
+      dt-instance="vm.dtInstance">
+
+      <colgroup>
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+        <col width="" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th width=""></th>
+          <th width="">Warrant</th>
+          <th width="">Expiration Date</th>
+          <th width="">Exercise Price</th>
+          <th width="">Ratio</th>
+          <th width="">Provider</th>
+          <th width="">Share price</th>
+          <th width="">Volume</th>
+          <th width="">Foreign buy</th>
+          <th width="">Price</th>
+          <th width="">Break-even price</th>
+          <th width="">Estimated profit (%)</th>
+          <th width="">Estimated price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="warrant in warrantList">
+          <td><a class="green shortinfo" ng-click="warrantInfo(warrant, $event)" title="View calculator"><i
+                class="glyphicon glyphicon-plus-sign"></a></td>
+          <td>{{warrant.name}}</td>
+          <td>{{warrant.expirationDate}}</td>
+          <td>{{warrant.exercisePrice}}</td>
+          <td>{{warrant.ratio}}</td>
+          <td>{{warrant.provider}}</td>
+          <td>{{warrant.sharePrice}}</td>
+          <td>{{warrant.volume}}</td>
+          <td>{{warrant.foreignBuy}}</td>
+          <td>{{warrant.price}}</td>
+          <td>{{warrant.breakEvenPrice}}</td>
+          <td>{{warrant.estimatedProfit}}</td>
+          <td>
+            {{warrant.estimatedPrice}}
+            <div class="btn-group">
+              <button type="button" class="btn btn-default btn" ng-click="edit($index);"><i
+                  class="glyphicon glyphicon-pencil"></i></button>
+            </div>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+
 </div>
