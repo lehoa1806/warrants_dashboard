@@ -39,7 +39,7 @@ app.directive('spinnerLoader', function () {
 app.factory('SharedService', function ($rootScope) {
     DEBUG.log("SharedService init");
 
-    var awsSetting = { region: 'us-west-2', signatureVersion: 'v4', accessKeyId: '', secretAccessKey: '' };
+    var awsSetting = { region: 'ap-southeast-1', accessKeyId: null, secretAccessKey: null };
 
     return {
         getAwsSetting: function () {
@@ -66,24 +66,6 @@ app.factory('SharedService', function ($rootScope) {
 
     };
 });
-
-//
-// Background service that may be executed before controllers are loaded
-//
-app.factory('BackgroundService', function ($rootScope) {
-    DEBUG.log("BackgroundService init");
-
-    var warrantEstimatedPrices;
-    warrantEstimatedPrices = {
-        CFPT2016: 84000,
-    }
-    return {
-        getWarrantEstimatedPrices: function () {
-            return warrantEstimatedPrices;
-        },
-    };
-});
-
 
 app.config(function ($stateProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/');
