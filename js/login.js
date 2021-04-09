@@ -12,11 +12,11 @@ app.controller('LogInController', function ($scope, $state, SharedService) {
         $scope.errorMessage = "";
         $scope.loadSpinner = true;
 
-        var cred = {}
-        cred.accessKeyId = auth.userName;
-        cred.secretAccessKey = auth.password;
-        SharedService.setCredentials(cred);
-        AWS.config.update(SharedService.getAwsSetting());
+        var credentials = {};
+        credentials.accessKeyId = auth.userName;
+        credentials.secretAccessKey = auth.password;
+        SharedService.setCredentials(credentials);
+        AWS.config.update(SharedService.getAwsCredentials());
         var sts = new AWS.STS();
         sts.getCallerIdentity().promise()
             .catch(function (error) {
