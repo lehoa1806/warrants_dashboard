@@ -5444,6 +5444,9 @@ h6.panel-title, .h6.panel-title {
     flex: 0 0 100%;
     max-width: 100%;
   }
+  .col-md-min-heigh-100 {
+    min-width: 100%;
+  }
   .order-md-first {
     -webkit-box-ordinal-group: 0;
     -ms-flex-order: -1;

@@ -81,16 +81,16 @@
           <tr>
             <th width="" style="text-align:center;"></th>
             <th width="" style="text-align:center;">Warrant</th>
-            <th width="" style="text-align:center;">Expiration Date</th>
-            <th width="" style="text-align:center;">Exercise Price</th>
-            <th width="" style="text-align:center;">Ratio</th>
-            <th width="" style="text-align:center;">Provider</th>
-            <th width="" style="text-align:center;">Share price</th>
+            <th width="" style="text-align:center;">Expiration date</th>
             <th width="" style="text-align:center;">Volume</th>
             <th width="" style="text-align:center;">Foreign buy</th>
+            <th width="" style="text-align:center;">Reference price</th>
+            <th width="" style="text-align:center;">Up/Down</th>
             <th width="" style="text-align:center;">Price</th>
             <th width="" style="text-align:center;">Break-even price</th>
-            <th width="" style="text-align:center;">Estimated profit (%)</th>
+            <th width="" style="text-align:center;">Current profit/loss</th>
+            <th width="" style="text-align:center;">Share price</th>
+            <th width="" style="text-align:center;">Estimated profit</th>
             <th width="" style="text-align:center;">Estimated price</th>
           </tr>
         </thead>
@@ -100,18 +100,25 @@
                   class="glyphicon glyphicon-plus-sign"></a></td>
             <td>{{warrant.name}}</td>
             <td>{{warrant.expirationDate}}</td>
-            <td>{{warrant.exercisePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
-            <td>{{warrant.ratio}}</td>
-            <td>{{warrant.provider}}</td>
-            <td><b>{{warrant.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
             <td>{{warrant.volume.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
             <td>{{warrant.foreignBuy.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
+            <td style="color:orange;"><b>{{warrant.referencePrice.toLocaleString(undefined, {maximumFractionDigits:
+                0})}}</b></td>
+            <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };">
+              <b>{{(warrant.upDown).toFixed(2)}}%</b>
+            </td>
             <td style="color:blue;"><b>{{warrant.price.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
             <td ng-style="{ color: warrant.breakEvenPrice > warrant.sharePrice ? 'red': 'green' };">
-              <b>{{warrant.breakEvenPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
+              <b>{{warrant.breakEvenPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+            </td>
+            <td ng-style="{ color: warrant.currentProfit > 0 ? 'green': 'red' };">
+              <b>{{(warrant.currentProfit).toFixed(2)}}%</b>
+            </td>
+            <td><b>{{warrant.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
             <td
               ng-style="{ color: (warrant.editor.estimatedPrice.newProfit||warrant.estimatedProfit) > 0 ? 'green': 'red' };">
-              <b>{{(warrant.editor.estimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}</b></td>
+              <b>{{(warrant.editor.estimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
+            </td>
             <td>
               <div class="clearfix">
                 <span

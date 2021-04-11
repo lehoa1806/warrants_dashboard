@@ -1,14 +1,105 @@
-<table class="table boderless">
-	<tr>
-		<th width="150">Share price :</th>
-		<td>{{warrant.sharePrice}}</td>
-	</tr>
-	<tr>
-		<th>Warrant price :</th>
-		<td>{{warrant.price}}</td>
-	</tr>
-	<tr>
-		<th>Warrant profit (%):</th>
-		<td>{{warrant.estimatedProfit}}</td>
-	</tr>
-</table>
+<div class="row" ng-controller="WarrantsController">
+  <div class="col-xl-4 .col-md-12">
+    <div class="card border-left-success shadow h-100 py-2">
+      <div class="card-body">
+        <div spinner-loader load-spinner={{loadSpinner}}></div>
+        <table class="table boderless">
+          <tr>
+            <th>Provider:</th>
+            <td>{{warrant.provider}}</td>
+          </tr>
+          <tr>
+            <th>Expiration date:</th>
+            <td>{{warrant.expirationDate}}</td>
+          </tr>
+          <tr>
+            <th>Exercise price:</th>
+            <td>{{warrant.exercisePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
+          </tr>
+          <tr>
+            <th>Ratio:</th>
+            <td>{{warrant.ratio}}</td>
+          </tr>
+          <tr>
+            <th>Reference price:</th>
+            <td style="color:orange;"><b>{{warrant.referencePrice.toLocaleString(undefined, {maximumFractionDigits:
+                0})}}</b></td>
+          </tr>
+          <tr>
+            <th>Warrant price :</th>
+            <td style="color:blue;"><b>{{warrant.price.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
+          </tr>
+          <tr>
+            <th>Up/Down:</th>
+            <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };"><b>{{(warrant.upDown).toFixed(2)}}%</b></td>
+          </tr>
+          <tr>
+            <th>Break-even price:</th>
+            <td ng-style="{ color: warrant.breakEvenPrice > warrant.sharePrice ? 'red': 'green' };">
+              <b>{{warrant.breakEvenPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+            </td>
+          </tr>
+          <tr>
+            <th>Share price :</th>
+            <td><b>{{warrant.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
+          </tr>
+          <tr>
+            <th>Current profit/loss (%):</th>
+            <td ng-style="{ color: warrant.currentProfit > 0 ? 'green': 'red' };">
+              <b>{{(warrant.currentProfit).toFixed(2)}}%</b>
+            </td>
+          </tr>
+          <tr>
+            <th>Estimated share price:</th>
+            <td>
+              <div class="clearfix">
+                <span
+                  ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newPrice||warrant.estimatedPrice) > warrant.breakEvenPrice ? 'green': 'red' };"
+                  data-ng-hide="warrant.editor.popUpEstimatedPrice.editMode"><b>{{(warrant.editor.popUpEstimatedPrice.newPrice||warrant.estimatedPrice).toLocaleString(undefined,
+                    {maximumFractionDigits: 0})}}</b></span>
+                <input type="text"
+                  placeholder="{{warrant.estimatedPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}"
+                  data-ng-show="warrant.editor.popUpEstimatedPrice.editMode"
+                  data-ng-model="warrant.editor.popUpEstimatedPrice.newPrice" data-ng-required
+                  ng-change='editPopUpEstimatedPrice(warrant)' size="6" />
+                <button type="submit" data-ng-hide="warrant.editor.popUpEstimatedPrice.editMode"
+                  class="btn btn-default btn-xs" ng-click=" openPopUpEstimatedPriceEditor(warrant);"><i
+                    class="glyphicon glyphicon-pencil"></i></button>
+                <button type="submit" data-ng-show="warrant.editor.popUpEstimatedPrice.editMode"
+                  class="btn btn-success btn-xs" ng-click="savePopUpEstimatedPrice(warrant);"><i
+                    class="glyphicon glyphicon-ok"></i></button>
+                <button type="submit" data-ng-show="warrant.editor.popUpEstimatedPrice.editMode"
+                  class="btn btn-danger btn-xs" ng-click="cancelPopUpEstimatedPriceEditor(warrant);"><i
+                    class="glyphicon glyphicon-remove"></i></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th>Estimated warrant price:</th>
+            <td style="color:darkslateblue;"><b>{{warrant.warrantEstimatedPrice.toLocaleString(undefined,
+                {maximumFractionDigits: 0})}}</b></td>
+          </tr>
+          <tr>
+            <th>Estimated profit:</th>
+            <td
+              ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit) > 0 ? 'green': 'red' };">
+              <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-8 .col-md-12">
+    <div class="card border-left-danger shadow h-100 py-2">
+      <div class="card-body">
+        <div spinner-loader load-spinner={{loadSpinner}}></div>
+        <div spinner-loader load-spinner={{loadSpinner}}></div>
+        <div class="chart-bar" style="height:100%">
+          <canvas id="allInfoLastSevenDays"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
