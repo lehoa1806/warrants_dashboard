@@ -102,6 +102,14 @@ app.config(function ($stateProvider, $urlRouterProvider) {
     ;
 });
 
+app.filter('secondsToDateTime', function() {
+  return function(seconds) {
+      var datetime = new Date(0,0,0,0,0,0,0);
+      datetime.setSeconds(seconds);
+      return datetime;
+  };
+});
+
 app.run(function ($state, $transitions, SharedService) {
   moment().format();
 

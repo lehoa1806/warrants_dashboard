@@ -3,7 +3,7 @@ app = angular.module('Dashboard');
 //
 // WarrantsController
 //
-app.controller('WarrantsController', function ($scope, SharedService, DTOptionsBuilder, DTColumnBuilder, $compile, $timeout) {
+app.controller('WarrantsController', function ($scope, SharedService, DTOptionsBuilder, DTColumnBuilder, $compile, $interval) {
   DEBUG.log("WarrantsController here!!!");
 
   var credentials = {
@@ -14,7 +14,7 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   $scope.warrantList = [];
   $scope.vm = {};
   $scope.vm.dtInstance = {};
-  $scope.vm.dtOptions = DTOptionsBuilder.newOptions().withOption('order', [0, 'asc']);
+  $scope.vm.dtOptions = DTOptionsBuilder.newOptions().withOption('order', [0, 'asc']).withDisplayLength(100);
   $scope.estimatedPrices = {};
   $scope.cachedEstimatedPrices = {};
 
@@ -32,17 +32,20 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
 
   $scope.editEstimatedPrice = function (warrant) {
     DEBUG.log('editEstimatedPrice');
-    let warrantEstimatedPrice = (warrant.editor.estimatedPrice.newPrice - warrant.exercisePrice) / warrant.ratio;
+    let warrantEstimatedPrice = (parseFloat(warrant.editor.estimatedPrice.newPrice) - warrant.exercisePrice) / warrant.ratio;
     warrant.editor.estimatedPrice.newProfit = (warrantEstimatedPrice / warrant.price - 1) * 100;
   };
 
   $scope.saveEstimatedPrice = function (warrant) {
     DEBUG.log('saveEstimatedPrice');
-    if (warrant.estimatedPrice != warrant.editor.estimatedPrice.newPrice) {
-      $scope.cachedEstimatedPrices[warrant.name] = warrant.editor.estimatedPrice.newPrice;
-      warrant.estimatedPrice = warrant.editor.estimatedPrice.newPrice;
-      warrant.estimatedProfit = warrant.editor.estimatedPrice.newProfit;
-      $scope.readToPost = true;
+    if (warrant.editor.estimatedPrice.newPrice) {
+      newPrice = parseFloat(warrant.editor.estimatedPrice.newPrice);
+      if (warrant.estimatedPrice != newPrice) {
+        $scope.cachedEstimatedPrices[warrant.name] = newPrice;
+        warrant.estimatedPrice = newPrice;
+        warrant.estimatedProfit = warrant.editor.estimatedPrice.newProfit;
+        $scope.readToPost = true;
+      }
     }
     warrant.editor.estimatedPrice.editMode = false;
     warrant.editor.estimatedPrice.newPrice = null;
@@ -81,7 +84,7 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
               },
             },
           };
-          iWarrant.breakEvenPrice = (iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice).toFixed(2);
+          iWarrant.breakEvenPrice = iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice;
           if (iWarrant.estimatedPrice) {
             let iWarrantEstimatedPrice = (iWarrant.estimatedPrice - iWarrant.exercisePrice) / iWarrant.ratio;
             iWarrant.estimatedProfit = (iWarrantEstimatedPrice / iWarrant.price - 1) * 100;
@@ -105,8 +108,6 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
       return null;
     }
     let dataToPost = {};
-    DEBUG.log($scope.cachedEstimatedPrices);
-    DEBUG.log($scope.estimatedPrices);
     for (let iWarrantName in $scope.cachedEstimatedPrices) {
       DEBUG.log(iWarrantName);
       if ($scope.cachedEstimatedPrices.hasOwnProperty(iWarrantName)) {
@@ -177,9 +178,9 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
                   newPrice: null,
                   newProfit: null,
                 },
-              },  
+              },
             };
-            iWarrant.breakEvenPrice = (iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice).toFixed(2);
+            iWarrant.breakEvenPrice = iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice;
             let iEstimatedPrice = getProperty($scope.cachedEstimatedPrices, iWarrant.name);
             if (iEstimatedPrice) {
               iWarrant.estimatedPrice = iEstimatedPrice;
@@ -192,6 +193,8 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
       })
       .finally(function () {
         DEBUG.log('reloadWarrantInfo done !!!');
+        if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+
         $scope.$apply();
       });
   };
@@ -220,6 +223,31 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   };
 
 
+  /*
+  Refresh data
+  */
+  $scope.refresh = false;
+  $scope.intervalSeconds = false;
+  var intervalPromise;
+
+  function reloadWarrantInfoWithCountdown() {
+    if ($scope.intervalSeconds == 0) {
+      $scope.reloadWarrantInfo();
+    } else $scope.intervalSeconds--;
+    DEBUG.log($scope.intervalSeconds);
+  }
+  $scope.startAutoRefresh = function () {
+    $scope.stopAutoRefresh();
+    if (!$scope.refresh) return;
+    $scope.intervalSeconds = $scope.refresh * 60;
+    intervalPromise = $interval(reloadWarrantInfoWithCountdown, 1000);
+  };
+  $scope.stopAutoRefresh = function () {
+    $interval.cancel(intervalPromise);
+  };
+  $scope.$on('$destroy', function () {
+    $scope.stopAutoRefresh();
+  });
 
 
 
