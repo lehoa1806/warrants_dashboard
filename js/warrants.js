@@ -288,7 +288,7 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   $scope.startAutoRefresh = function () {
     $scope.stopAutoRefresh();
     if (!$scope.refresh) return;
-    $scope.intervalSeconds = $scope.refresh;
+    $scope.intervalSeconds = $scope.refresh * 60;
     intervalPromise = $interval(reloadWarrantInfoWithCountdown, 1000);
   };
   $scope.stopAutoRefresh = function () {
