@@ -14,7 +14,13 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   $scope.warrantList = [];
   $scope.vm = {};
   $scope.vm.dtInstance = {};
-  $scope.vm.dtOptions = DTOptionsBuilder.newOptions().withOption('order', [0, 'asc']).withDisplayLength(100);
+  $scope.vm.dtOptions = DTOptionsBuilder.newOptions()
+    .withOption('order', [0, 'asc'])
+    .withOption('destroy', true)
+    .withOption('responsive', true)
+    .withOption('deferRender', true)
+    .withOption('processing', true)
+    .withDisplayLength(100);
   $scope.estimatedPrices = {};
   $scope.cachedEstimatedPrices = {};
 
@@ -82,7 +88,6 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
     warrant.editor.popUpEstimatedPrice.editMode = false;
     warrant.editor.popUpEstimatedPrice.newPrice = null;
     warrant.editor.popUpEstimatedPrice.newProfit = null;
-    DEBUG.log($scope.cachedEstimatedPrices);
   };
 
   apigClientFactory.newClient(credentials).dashboardGet({}, {}, {})
@@ -94,9 +99,7 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
         DEBUG.log('dashboardGet returned empty response !!!');
       } else {
         DEBUG.log('dashboardGet returned data !!!');
-        DEBUG.log(response);
         var warrants = response.data.warrants;
-        DEBUG.log(warrants);
         for (let i = 0; i < warrants.length; i++) {
           let iWarrant = {
             "name": warrants[i].warrant,
@@ -150,21 +153,14 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
     }
     let dataToPost = {};
     for (let iWarrantName in $scope.cachedEstimatedPrices) {
-      DEBUG.log(iWarrantName);
       if ($scope.cachedEstimatedPrices.hasOwnProperty(iWarrantName)) {
-        DEBUG.log('$scope.cachedEstimatedPrices.hasOwnProperty(iWarrantName)');
         if ($scope.estimatedPrices.hasOwnProperty(iWarrantName)) {
-          DEBUG.log('$scope.estimatedPrices.hasOwnProperty(iWarrantName)');
-          DEBUG.log($scope.estimatedPrices);
-          DEBUG.log($scope.cachedEstimatedPrices);
 
           if ($scope.estimatedPrices[iWarrantName] != $scope.cachedEstimatedPrices[iWarrantName]) {
             dataToPost[iWarrantName] = $scope.cachedEstimatedPrices[iWarrantName];
           }
-          DEBUG.log(dataToPost);
         } else {
           dataToPost[iWarrantName] = $scope.cachedEstimatedPrices[iWarrantName];
-          DEBUG.log(dataToPost);
         }
       }
     }
@@ -199,7 +195,7 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
         if (!response || !response.data) {
           DEBUG.log('infoGet returned empty response !!!');
         } else {
-          var warrants = response.data.warrants;
+          let warrants = response.data.warrants;
           $scope.warrantList = [];
           for (let i = 0; i < warrants.length; i++) {
             let iWarrant = {
@@ -245,6 +241,7 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
       .finally(function () {
         DEBUG.log('reloadWarrantInfo done !!!');
         if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+        reloading = false;
         $scope.$apply();
       });
   };
@@ -279,17 +276,19 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   $scope.refresh = false;
   $scope.intervalSeconds = false;
   var intervalPromise;
+  var reloading = false;
 
   function reloadWarrantInfoWithCountdown() {
-    if ($scope.intervalSeconds == 0) {
+    if (reloading) return;
+    else if ($scope.intervalSeconds == 0) {
+      reloading = true;
       $scope.reloadWarrantInfo();
     } else $scope.intervalSeconds--;
-    DEBUG.log($scope.intervalSeconds);
   }
   $scope.startAutoRefresh = function () {
     $scope.stopAutoRefresh();
     if (!$scope.refresh) return;
-    $scope.intervalSeconds = $scope.refresh * 60;
+    $scope.intervalSeconds = $scope.refresh;
     intervalPromise = $interval(reloadWarrantInfoWithCountdown, 1000);
   };
   $scope.stopAutoRefresh = function () {
@@ -299,8 +298,8 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
     $scope.stopAutoRefresh();
   });
 
-/*
-Warrant chart
-*/
-// ChartJS init
+  /*
+  Warrant chart
+  */
+  // ChartJS init
 });

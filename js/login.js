@@ -27,7 +27,6 @@ app.controller('LogInController', function ($scope, $state, SharedService) {
                     SharedService.resetData();
                     $scope.errorMessage = "Your credentials are not correct or expired. Please contact your administrator to get new credentials";
                 } else {
-                    console.log(data);
                     $state.go('root.home');
                 }
             })
