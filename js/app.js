@@ -1,8 +1,10 @@
-'use strict';
-
 var app = angular.module('Dashboard', ['datatables', 'ui.router']);
 
-// Write debug to console.log
+/*
+========================================================================================================================
+= Debug                                                                                                                =
+========================================================================================================================
+*/
 var DEBUG = (function () {
   var timestamp = function () { };
   timestamp.toString = function () {
@@ -13,9 +15,11 @@ var DEBUG = (function () {
   };
 })();
 
-//
-// Common Directives
-//
+/*
+========================================================================================================================
+= Debug                                                                                                                =
+========================================================================================================================
+*/
 app.directive('spinnerLoader', function () {
   return {
     restrict: 'A',
@@ -32,38 +36,50 @@ app.directive('spinnerLoader', function () {
   };
 });
 
-
-//
-// Shared service that all controllers can use
-//
+/*
+========================================================================================================================
+= Global data that will all controllers can share                                                                      =
+========================================================================================================================
+*/
 app.factory('SharedService', function ($rootScope) {
   DEBUG.log("SharedService init");
-
   var awsCredentials = { region: 'ap-southeast-1', accessKeyId: null, secretAccessKey: null };
-
+  var estimatedReadyToPost = false;
+  var estimatedPrices = {};
+  var cachedEstimatedPrices = {};
   return {
+    estimatedReadyToPost: estimatedReadyToPost,
+    estimatedPrices: estimatedPrices,
+    cachedEstimatedPrices: cachedEstimatedPrices,
+
     getAwsCredentials: function () {
       return awsCredentials;
     },
-
     setCredentials: function (credentials) {
       awsCredentials.accessKeyId = credentials.accessKeyId;
       awsCredentials.secretAccessKey = credentials.secretAccessKey;
     },
-
     resetData: function () {
       awsCredentials.accessKeyId = null;
       awsCredentials.secretAccessKey = null;
       AWS.config.update(awsCredentials);
     },
-
     isAuthenticated: function () {
       if (awsCredentials.accessKeyId) {
         return true;
       }
       return false;
     },
-
+    estimatedPriceToPost: function () {
+      estimatedReadyToPost = true;
+      var element = angular.element(document.querySelector('#EstimatedPriceToPost'));
+      element.removeClass('btn-success').addClass('btn-warning');
+    },
+    estimatedPricePostDone: function () {
+      estimatedReadyToPost = false;
+      var element = angular.element(document.querySelector('#EstimatedPriceToPost'));
+      element.removeClass('btn-warning').addClass('btn-success');
+    },
   };
 });
 
@@ -102,11 +118,11 @@ app.config(function ($stateProvider, $urlRouterProvider) {
     ;
 });
 
-app.filter('secondsToDateTime', function() {
-  return function(seconds) {
-      var datetime = new Date(0,0,0,0,0,0,0);
-      datetime.setSeconds(seconds);
-      return datetime;
+app.filter('secondsToDateTime', function () {
+  return function (seconds) {
+    var datetime = new Date(0, 0, 0, 0, 0, 0, 0);
+    datetime.setSeconds(seconds);
+    return datetime;
   };
 });
 
