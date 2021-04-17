@@ -60,13 +60,13 @@
             <td>
               <div class="clearfix">
                 <span
-                  ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newPrice||warrant.shareEstimatedPrice) > warrant.breakEvenPrice ? 'green': 'red' };"
-                  data-ng-hide="warrant.editor.popUpEstimatedPrice.editMode"><b>{{(warrant.editor.popUpEstimatedPrice.newPrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
+                  ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newSharePrice||warrant.shareEstimatedPrice) > warrant.breakEvenPrice ? 'green': 'red' };"
+                  data-ng-hide="warrant.editor.popUpEstimatedPrice.editMode"><b>{{(warrant.editor.popUpEstimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
                     {maximumFractionDigits: 0})}}</b></span>
                 <input type="text"
                   placeholder="{{warrant.shareEstimatedPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}"
                   data-ng-show="warrant.editor.popUpEstimatedPrice.editMode"
-                  data-ng-model="warrant.editor.popUpEstimatedPrice.newPrice" data-ng-required
+                  data-ng-model="warrant.editor.popUpEstimatedPrice.newSharePrice" data-ng-required
                   ng-change='editPopUpEstimatedPrice(warrant)' size="6" />
                 <button type="submit" data-ng-hide="warrant.editor.popUpEstimatedPrice.editMode"
                   class="btn btn-default btn-xs" ng-click=" openPopUpEstimatedPriceEditor(warrant);"><i

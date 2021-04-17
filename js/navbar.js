@@ -1,13 +1,18 @@
 app = angular.module('Dashboard');
 
-app.controller('NavbarController', function ($scope, $state, SharedService) {
+/*
+========================================================================================================================
+= NavbarController                                                                                                     =
+========================================================================================================================
+*/
+app.controller('NavbarController', function ($scope, $state, GlobalService) {
   DEBUG.log('NavbarController init');
-  $scope.SharedService = SharedService;
+  $scope.GlobalService = GlobalService;
   $scope.$state = $state;
 
   $scope.onLogoutClicked = function () {
     DEBUG.log('NavbarController: Logged out');
-    SharedService.resetData();
+    GlobalService.resetData();
     $state.go('root.login');
     return;
   };

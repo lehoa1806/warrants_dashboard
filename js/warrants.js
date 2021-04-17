@@ -7,13 +7,9 @@ app = angular.module('Dashboard');
 ========================================================================================================================
 ========================================================================================================================
 */
-app.controller('WarrantsController', function ($scope, SharedService, DTOptionsBuilder, DTColumnBuilder, $compile, $interval) {
+app.controller('WarrantsController', function ($scope, GlobalService, DTOptionsBuilder, $compile, $interval) {
   DEBUG.log("WarrantsController here!!!");
-  var credentials = {
-    accessKey: SharedService.getAwsCredentials().accessKeyId,
-    secretKey: SharedService.getAwsCredentials().secretAccessKey,
-    region: SharedService.getAwsCredentials().region,
-  };
+  $scope.GlobalService = GlobalService;
   $scope.warrantList = [];
   $scope.vm = {};
   $scope.vm.dtInstance = {};
@@ -30,110 +26,22 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   = APIs                                                                                                               =
   ======================================================================================================================
   */
-  $scope.estimatedPricePost = function () {
-    if (!SharedService.estimatedReadyToPost) {
-      DEBUG.log('estimatedPricePost: Nothing to Update!');
-      return;
-    }
-    let dataToPost = {};
-    for (let iWarrantName in SharedService.cachedEstimatedPrices) {
-      if (SharedService.cachedEstimatedPrices.hasOwnProperty(iWarrantName)) {
-        if (SharedService.estimatedPrices.hasOwnProperty(iWarrantName)) {
-          if (SharedService.estimatedPrices[iWarrantName] != SharedService.cachedEstimatedPrices[iWarrantName]) {
-            dataToPost[iWarrantName] = SharedService.cachedEstimatedPrices[iWarrantName];
-          }
-        } else {
-          dataToPost[iWarrantName] = SharedService.cachedEstimatedPrices[iWarrantName];
-        }
-      }
-    }
-    if (Object.keys(dataToPost).length == 0) {
-      DEBUG.log('estimatedPricePost: Data has no change!');
-      return;
-    }
-    apigClientFactory.newClient(credentials).estimatedPricePost({}, { prices: dataToPost }, {})
-      .catch(function (error) {
-        DEBUG.log(error.message || JSON.stringify(error));
-      })
-      .then(function (response) {
-        if (!response || !response.data) {
-          DEBUG.log('estimatedPricesPost returned empty response !!!');
-        } else {
-          SharedService.estimatedPrices = SharedService.cachedEstimatedPrices;
-        }
-      })
-      .finally(function () {
-        SharedService.estimatedReadyToPost = false;
-        DEBUG.log('estimatedPricesPost: Done !!!');
-      });
-  };
-
+  $scope.estimatedPricePost = GlobalService.apis.saveEstimatedPrices;
   $scope.reloadWarrantInfo = function () {
-    apigClientFactory.newClient(credentials).infoGet({}, {}, {})
-      .catch(function (error) {
-        DEBUG.log(error.message || JSON.stringify(error));
-      })
-      .then(function (response) {
-        if (!response || !response.data) {
-          DEBUG.log('infoGet returned empty response !!!');
-        } else {
-          let warrants = response.data.warrants;
-          $scope.warrantList = [];
-          for (let i = 0; i < warrants.length; i++) {
-            let iWarrant = {
-              "name": warrants[i].warrant,
-              "expirationDate": warrants[i].expirationDate,
-              "exercisePrice": warrants[i].exercisePrice,
-              "ratio": parseFloat(warrants[i].exerciseRatio),
-              "provider": warrants[i].provider,
-              "sharePrice": warrants[i].sharePrice,
-              "volume": warrants[i].volume,
-              "foreignBuy": warrants[i].foreignBuy,
-              "referencePrice": warrants[i].referencePrice,
-              "price": warrants[i].price,
-              'estimatedPrice': null,
-              "shareEstimatedPrice": warrants[i].estimatedPrice,
-              "editor": {
-                estimatedPrice: {
-                  editMode: false,
-                  newSharePrice: null,
-                  newShareProfit: null,
-                  newWarrantPrice: null,
-                  newWarrantProfit: null,
-                },
-                popUpEstimatedPrice: {
-                  editMode: false,
-                  newSharePrice: null,
-                  newShareProfit: null,
-                  newWarrantPrice: null,
-                  newWarrantProfit: null,
-                },
-                buyingPrice: {
-                  price: null,
-                  profit: null,
-                },
-              },
-            };
-            iWarrant.upDown = (iWarrant.price / iWarrant.referencePrice - 1) * 100;
-            iWarrant.breakEvenPrice = iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice;
-            iWarrant.currentProfit = (1 - iWarrant.breakEvenPrice / iWarrant.sharePrice) * 100;
-            let iShareEstimatedPrice = getProperty(SharedService.cachedEstimatedPrices, iWarrant.name);
-            if (iShareEstimatedPrice) { iWarrant.shareEstimatedPrice = iShareEstimatedPrice; }
-            if (iWarrant.shareEstimatedPrice) {
-              iWarrant.shareEstimatedProfit = (iWarrant.shareEstimatedPrice / iWarrant.sharePrice - 1) * 100;
-              iWarrant.estimatedPrice = (iWarrant.shareEstimatedPrice - iWarrant.exercisePrice) / iWarrant.ratio;
-              iWarrant.estimatedProfit = (iWarrant.estimatedPrice / iWarrant.price - 1) * 100;
-            }
-            $scope.warrantList.push(iWarrant);
-          }
-        }
-      })
-      .finally(function () {
-        DEBUG.log('reloadWarrantInfo done !!!');
-        if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
-        reloading = false;
-        $scope.$apply();
-      });
+    GlobalService.apis.loadWarrants().then(() => function () {
+      $scope.warrantList = GlobalService.cache.warrants;
+      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+      $scope.$apply();
+    }()
+    );
+  };
+  $scope.getDashboard = function () {
+    GlobalService.apis.getDashboard().then(() => function () {
+      $scope.warrantList = GlobalService.cache.warrants;
+      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+      $scope.$apply();
+    }()
+    );
   };
 
   /*
@@ -195,12 +103,12 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
     if (warrant.editor.estimatedPrice.newSharePrice) {
       newSharePrice = parseFloat(warrant.editor.estimatedPrice.newSharePrice);
       if (warrant.shareEstimatedPrice != newSharePrice) {
-        SharedService.cachedEstimatedPrices[warrant.name] = newSharePrice;
+        GlobalService.cache.cachedEstimatedPrices[warrant.name] = newSharePrice;
         warrant.shareEstimatedPrice = newSharePrice;
         warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
         warrant.estimatedPrice = warrant.editor.estimatedPrice.newWarrantPrice;
         warrant.estimatedProfit = warrant.editor.estimatedPrice.newWarrantProfit;
-        SharedService.estimatedPriceToPost();
+        GlobalService.estimatedPriceToPost();
       }
     }
     resetEditor(warrant);
@@ -239,12 +147,12 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
     if (warrant.editor.popUpEstimatedPrice.newSharePrice) {
       newSharePrice = parseFloat(warrant.editor.popUpEstimatedPrice.newSharePrice);
       if (warrant.shareEstimatedPrice != newSharePrice) {
-        SharedService.cachedEstimatedPrices[warrant.name] = newSharePrice;
+        GlobalService.cache.cachedEstimatedPrices[warrant.name] = newSharePrice;
         warrant.shareEstimatedPrice = newSharePrice;
         warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
         warrant.estimatedPrice = warrant.editor.popUpEstimatedPrice.newWarrantPrice;
         warrant.estimatedProfit = warrant.editor.popUpEstimatedPrice.newWarrantProfit;
-        SharedService.estimatedPriceToPost();
+        GlobalService.estimatedPriceToPost();
       }
     }
     resetPopupEditor(warrant);
@@ -298,67 +206,5 @@ app.controller('WarrantsController', function ($scope, SharedService, DTOptionsB
   = Load the dashboard                                                                                                 =
   ======================================================================================================================
   */
-  apigClientFactory.newClient(credentials).dashboardGet({}, {}, {})
-    .catch(function (error) {
-      DEBUG.log(error.message || JSON.stringify(error));
-    })
-    .then(function (response) {
-      if (!response || !response.data) {
-        DEBUG.log('dashboardGet returned empty response !!!');
-      } else {
-        DEBUG.log('dashboardGet returned data !!!');
-        var warrants = response.data.warrants;
-        for (let i = 0; i < warrants.length; i++) {
-          let iWarrant = {
-            "name": warrants[i].warrant,
-            "expirationDate": warrants[i].expirationDate,
-            "exercisePrice": warrants[i].exercisePrice,
-            "ratio": parseFloat(warrants[i].exerciseRatio),
-            "provider": warrants[i].provider,
-            "sharePrice": warrants[i].sharePrice,
-            "volume": warrants[i].volume,
-            "foreignBuy": warrants[i].foreignBuy,
-            "referencePrice": warrants[i].referencePrice,
-            "price": warrants[i].price,
-            'estimatedPrice': null,
-            "shareEstimatedPrice": warrants[i].estimatedPrice, /* ---- change the function -- update it */
-            "editor": {
-              estimatedPrice: {
-                editMode: false,
-                newSharePrice: null,
-                newShareProfit: null,
-                newWarrantPrice: null,
-                newWarrantProfit: null,
-              },
-              popUpEstimatedPrice: {
-                editMode: false,
-                newSharePrice: null,
-                newShareProfit: null,
-                newWarrantPrice: null,
-                newWarrantProfit: null,
-              },
-              buyingPrice: {
-                price: null,
-                profit: null,
-              },
-            },
-          };
-          iWarrant.upDown = (iWarrant.price / iWarrant.referencePrice - 1) * 100;
-          iWarrant.breakEvenPrice = iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice;
-          iWarrant.currentProfit = (1 - iWarrant.breakEvenPrice / iWarrant.sharePrice) * 100;
-          if (iWarrant.shareEstimatedPrice) {
-            iWarrant.shareEstimatedProfit = (iWarrant.shareEstimatedPrice / iWarrant.sharePrice - 1) * 100;
-            iWarrant.estimatedPrice = (iWarrant.shareEstimatedPrice - iWarrant.exercisePrice) / iWarrant.ratio;
-            iWarrant.estimatedProfit = (iWarrant.estimatedPrice / iWarrant.price - 1) * 100;
-            SharedService.estimatedPrices[iWarrant.name] = iWarrant.shareEstimatedPrice;
-            SharedService.cachedEstimatedPrices[iWarrant.name] = iWarrant.shareEstimatedPrice;
-          }
-          $scope.warrantList.push(iWarrant);
-        }
-      }
-    })
-    .finally(function () {
-      DEBUG.log('dashboardGet done !!!');
-      $scope.$apply();
-    });
+  if ($scope.warrantList.length == 0) $scope.getDashboard();
 });

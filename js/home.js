@@ -1,9 +1,11 @@
 app = angular.module('Dashboard');
 
-//
-// HomeController
-//
-app.controller('HomeController', function ($scope, $state, SharedService) {
+/*
+========================================================================================================================
+= HomeController                                                                                                       =
+========================================================================================================================
+*/
+app.controller('HomeController', function ($scope, $state, GlobalService) {
 
   $scope.goToWarrants = () => {
     DEBUG.log("HomeController is under construction now, route to Warrants");

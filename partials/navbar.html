@@ -5,7 +5,9 @@
         </a>
     </div>
 
-    <div class="nav navbar-nav navbar-right" ng-show="SharedService.isAuthenticated()" style="padding-top:13px;padding-bottom:13px!important;">
-        <span class="text-xs font-weight-bold text-white" ng-click="onLogoutClicked()" style="cursor: pointer;" title="Logout"><i class="icon-switch2 px-2" ></i>Logout</span>
+    <div class="nav navbar-nav navbar-right" ng-show="GlobalService.isAuthenticated()"
+        style="padding-top:13px;padding-bottom:13px!important;">
+        <span class="text-xs font-weight-bold text-white" ng-click="onLogoutClicked()" style="cursor: pointer;"
+            title="Logout"><i class="icon-switch2 px-2"></i>Logout</span>
     </div>
 </div>
