@@ -153,7 +153,7 @@ function initApis(cache, awsCredentials) {
         infoLoading = true;
         apigClientFactory.newClient(getCredentials()).infoGet({}, {}, {})
           .catch(function (error) {
-            let message = ror.message || JSON.stringify(error);
+            let message = error.message || JSON.stringify(error);
             DEBUG.log(message);
             reject(message);
           })
@@ -164,10 +164,11 @@ function initApis(cache, awsCredentials) {
               reject(message);
             } else {
               let warrants = response.data.warrants;
-              cache.warrants = [];
-              for (let i = 0; i < warrants.length; i++) {
-                let iWarrant = getWarrantInfo(warrants[i]);
-                cache.warrants.push(iWarrant);
+              cache.warrants = {};
+              for (let key in warrants) {
+                if (warrants.hasOwnProperty(key)) {
+                  cache.warrants[key] = getWarrantInfo(warrants[key]);
+                }
               }
               resolve();
             }
@@ -186,7 +187,7 @@ function initApis(cache, awsCredentials) {
         infoLoading = true;
         apigClientFactory.newClient(getCredentials()).dashboardGet({}, {}, {})
           .catch(function (error) {
-            let message = ror.message || JSON.stringify(error);
+            let message = error.message || JSON.stringify(error);
             DEBUG.log(message);
             reject(message);
           }).then(function (response) {
@@ -197,14 +198,16 @@ function initApis(cache, awsCredentials) {
             } else {
               DEBUG.log('dashboardGet returned data !!!');
               var warrants = response.data.warrants;
-              cache.warrants = [];
-              for (let i = 0; i < warrants.length; i++) {
-                let iWarrant = getWarrantInfo(warrants[i]);
-                if (iWarrant.shareEstimatedPrice) {
-                  cache.estimatedPrices[iWarrant.name] = iWarrant.shareEstimatedPrice;
-                  cache.cachedEstimatedPrices[iWarrant.name] = iWarrant.shareEstimatedPrice;
+              cache.warrants = {};
+              for (let key in warrants) {
+                if (warrants.hasOwnProperty(key)) {
+                  let iWarrant = getWarrantInfo(warrants[key]);
+                  if (iWarrant.shareEstimatedPrice) {
+                    cache.estimatedPrices[iWarrant.name] = iWarrant.shareEstimatedPrice;
+                    cache.cachedEstimatedPrices[iWarrant.name] = iWarrant.shareEstimatedPrice;
+                  }
+                  cache.warrants[key] = iWarrant;
                 }
-                cache.warrants.push(iWarrant);
               }
               resolve();
             }

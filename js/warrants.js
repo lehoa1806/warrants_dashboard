@@ -7,8 +7,9 @@ app = angular.module('Dashboard');
 ========================================================================================================================
 ========================================================================================================================
 */
-app.controller('WarrantsController', function ($scope, GlobalService, DTOptionsBuilder, $compile, $interval) {
+app.controller('WarrantsController', function ($scope, $state, GlobalService, DTOptionsBuilder, $compile, $interval) {
   DEBUG.log("WarrantsController here!!!");
+  $scope.$state = $state;
   $scope.GlobalService = GlobalService;
   $scope.warrantList = [];
   $scope.vm = {};
@@ -29,7 +30,7 @@ app.controller('WarrantsController', function ($scope, GlobalService, DTOptionsB
   $scope.estimatedPricePost = GlobalService.apis.saveEstimatedPrices;
   $scope.reloadWarrantInfo = function () {
     GlobalService.apis.loadWarrants().then(() => function () {
-      $scope.warrantList = GlobalService.cache.warrants;
+      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
       if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
       $scope.$apply();
     }()
@@ -37,7 +38,7 @@ app.controller('WarrantsController', function ($scope, GlobalService, DTOptionsB
   };
   $scope.getDashboard = function () {
     GlobalService.apis.getDashboard().then(() => function () {
-      $scope.warrantList = GlobalService.cache.warrants;
+      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
       if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
       $scope.$apply();
     }()
