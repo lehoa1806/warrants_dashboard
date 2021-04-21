@@ -6,7 +6,8 @@ var app = angular.module('Dashboard', ['datatables', 'ui.router']);
 ========================================================================================================================
 */
 app.directive('spinnerLoader', spinnerLoader)
-  .directive('showWarrantInfo', showWarrantInfo);
+  .directive('showWarrantInfo', showWarrantInfo)
+  .directive('datetimePicker', datetimePicker);
 
 /*
 ========================================================================================================================
@@ -35,8 +36,8 @@ app.config(function ($stateProvider, $urlRouterProvider) {
       url: '/',
       views: {
         // 'sidebar': { templateUrl: 'partials/sidebar.html' },
-        // 'container': { templateUrl: 'partials/home.html' }
-        'view@': { templateUrl: 'partials/home.html' }
+        'container': { templateUrl: 'partials/home.html' }
+        // 'view@': { templateUrl: 'partials/home.html' }
       },
     })
     .state('root.warrants', {

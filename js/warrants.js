@@ -7,7 +7,7 @@ app = angular.module('Dashboard');
 ========================================================================================================================
 ========================================================================================================================
 */
-app.controller('WarrantsController', function ($scope, $state, GlobalService, DTOptionsBuilder, $compile, $interval) {
+app.controller('WarrantsController', function ($scope, $state, $timeout, $compile, $interval, GlobalService, DTOptionsBuilder) {
   DEBUG.log("WarrantsController here!!!");
   $scope.$state = $state;
   $scope.GlobalService = GlobalService;
@@ -21,29 +21,6 @@ app.controller('WarrantsController', function ($scope, $state, GlobalService, DT
     .withOption('deferRender', true)
     .withOption('processing', true)
     .withDisplayLength(100);
-
-  /*
-  ======================================================================================================================
-  = APIs                                                                                                               =
-  ======================================================================================================================
-  */
-  $scope.estimatedPricePost = GlobalService.apis.saveEstimatedPrices;
-  $scope.reloadWarrantInfo = function () {
-    GlobalService.apis.loadWarrants().then(() => function () {
-      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
-      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
-      $scope.$apply();
-    }()
-    );
-  };
-  $scope.getDashboard = function () {
-    GlobalService.apis.getDashboard().then(() => function () {
-      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
-      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
-      $scope.$apply();
-    }()
-    );
-  };
 
   /*
   ======================================================================================================================
@@ -76,6 +53,11 @@ app.controller('WarrantsController', function ($scope, $state, GlobalService, DT
   = Estimated price editors                                                                                            =
   ======================================================================================================================
   */
+  $scope.updateEstimatedPrices = function () {
+    GlobalService.apis.updateEstimatedPrices()
+    .catch(function (error) { DEBUG.log(error); })
+  }
+
   function resetEditor(warrant) {
     warrant.editor.estimatedPrice = {
       editMode: false,
@@ -102,9 +84,9 @@ app.controller('WarrantsController', function ($scope, $state, GlobalService, DT
   $scope.saveEstimatedPrice = function (warrant) {
     DEBUG.log('saveEstimatedPrice');
     if (warrant.editor.estimatedPrice.newSharePrice) {
-      newSharePrice = parseFloat(warrant.editor.estimatedPrice.newSharePrice);
+      let newSharePrice = parseFloat(warrant.editor.estimatedPrice.newSharePrice);
       if (warrant.shareEstimatedPrice != newSharePrice) {
-        GlobalService.cache.cachedEstimatedPrices[warrant.name] = newSharePrice;
+        GlobalService.cache.cachedEstimatedPrices[warrant.warrant] = newSharePrice;
         warrant.shareEstimatedPrice = newSharePrice;
         warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
         warrant.estimatedPrice = warrant.editor.estimatedPrice.newWarrantPrice;
@@ -146,9 +128,9 @@ app.controller('WarrantsController', function ($scope, $state, GlobalService, DT
   $scope.savePopUpEstimatedPrice = function (warrant) {
     DEBUG.log('savePopUpEstimatedPrice');
     if (warrant.editor.popUpEstimatedPrice.newSharePrice) {
-      newSharePrice = parseFloat(warrant.editor.popUpEstimatedPrice.newSharePrice);
+      let newSharePrice = parseFloat(warrant.editor.popUpEstimatedPrice.newSharePrice);
       if (warrant.shareEstimatedPrice != newSharePrice) {
-        GlobalService.cache.cachedEstimatedPrices[warrant.name] = newSharePrice;
+        GlobalService.cache.cachedEstimatedPrices[warrant.warrant] = newSharePrice;
         warrant.shareEstimatedPrice = newSharePrice;
         warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
         warrant.estimatedPrice = warrant.editor.popUpEstimatedPrice.newWarrantPrice;
@@ -176,6 +158,19 @@ app.controller('WarrantsController', function ($scope, $state, GlobalService, DT
   var intervalPromise;
   var reloading = false;
 
+  $scope.reloadWarrantInfo = function () {
+    GlobalService.apis.pullRealtimeWarrantInfo()
+    .then(function () {
+      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
+    })
+    .catch(function (error) { DEBUG.log(error); })
+    .finally(function () {
+      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+      reloading = false;
+      $scope.$apply();
+    });
+  };
+
   function reloadWarrantInfoWithCountdown() {
     if (reloading) return;
     else if ($scope.intervalSeconds == 0) {
@@ -198,14 +193,23 @@ app.controller('WarrantsController', function ($scope, $state, GlobalService, DT
 
   /*
   ======================================================================================================================
-  = Warrant chart - ChartJS init                                                                                       =
+  = Load initial data for Warrant dashboard                                                                                                 =
   ======================================================================================================================
   */
-
-  /*
-  ======================================================================================================================
-  = Load the dashboard                                                                                                 =
-  ======================================================================================================================
-  */
-  if ($scope.warrantList.length == 0) $scope.getDashboard();
+  (function () {
+    if (!GlobalService.cache.warrants || Object.keys(GlobalService.cache.warrants).length == 0)
+      return GlobalService.apis.loadWarrantInfo();
+    else return Promise.resolve();
+  })()
+  .then(function () {
+    $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
+  })
+  .then(function () {
+    $scope.refresh = 1;
+    $scope.startAutoRefresh();
+  })
+  .catch(function (error) { DEBUG.log(error); })
+  .finally(function () {
+    $scope.$apply();
+  });
 });

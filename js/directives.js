@@ -9,7 +9,7 @@ function showWarrantInfo($compile) {
     restrict: 'A',
     templateUrl: 'partials/warrant.html',
     transclude: true,
-    link: function (scope, element, attrs) { }
+    link: function (scope, element, attributes) { }
   };
 }
 
@@ -29,6 +29,25 @@ function spinnerLoader() {
     link: function (scope, element, attributes) {
       attributes.$observe('loadSpinner', function (value) {
         element.css('visibility', value === 'true' ? 'visible' : 'hidden');
+      });
+    }
+  };
+}
+
+/*
+========================================================================================================================
+= Loading animation                                                                                                    =
+========================================================================================================================
+*/
+function datetimePicker() {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function (scope, element, attributes, ngModel) {
+      element.datetimepicker({ format: 'YYYY-MM-DD' })
+      .on('dp.change', function(value){
+        ngModel.$setViewValue(moment(value.date).format('YYYY-MM-DD'));
+        scope.$apply()
       });
     }
   };

@@ -14,6 +14,7 @@ var DEBUG = (function () {
 })();
 
 function getProperty(object, key, dfValue) {
+  object = object || {};
   dfValue = dfValue || null;
   return object.hasOwnProperty(key) ? object[key] : dfValue;
 }
@@ -31,4 +32,8 @@ function mergeTwoObject(firstObject, secondObject) {
     }
   }
   return object;
+}
+
+function getASimpleRandomString() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }

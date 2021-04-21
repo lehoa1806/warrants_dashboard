@@ -1,13 +1,3 @@
-<style>
-  tr.shown a {
-    color: orange;
-  }
-
-  .green {
-    color: green;
-  }
-</style>
-
 <div id="page-wrapper" ng-controller="WarrantsController">
   <div class="page-header page-header-default">
     <div class="panel panel-primary dropzone">
@@ -31,12 +21,12 @@
         <div class="btn-group">
           <button type="button" id="EstimatedPriceToPost" class="btn btn-success"
             title="Save the Estimated Prices to Database"
-            ng-click="estimatedPricePost(); GlobalService.estimatedPricePostDone();"
+            ng-click="updateEstimatedPrices(); GlobalService.estimatedPricePostDone();"
             style="pointer-events: auto; height: 33px;"><span class="glyphicon glyphicon-saved"></span>
           </button>
         </div>
         <div class="btn-group">
-          <button type="button" class="btn btn-info" title="Refresh data" ng-click="reloadWarrantInfo($index);"
+          <button type="button" class="btn btn-info" title="Refresh data" ng-click="reloadWarrantInfo();"
             style="pointer-events: auto; height: 33px;"><span class="glyphicon glyphicon-refresh" data-ng-hide="refresh"
               style="display: inline-block"></span>
             <span class="glyphicon glyphicon-refresh" data-ng-show="refresh"
@@ -51,14 +41,14 @@
           <ul class="dropdown-menu dropdown-menu-right">
             <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == false}"
                 ng-click="refresh = false; stopAutoRefresh()">Manual refresh</a></li>
+            <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == 1}"
+                ng-click="refresh = 1; startAutoRefresh()">Refresh every minute</a></li>
+            <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == 2}"
+                ng-click="refresh = 2; startAutoRefresh()">Refresh every 2m</a></li>
             <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == 5}"
                 ng-click="refresh = 5; startAutoRefresh()">Refresh every 5m</a></li>
             <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == 15}"
                 ng-click="refresh = 15; startAutoRefresh()">Refresh every 15m</a></li>
-            <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == 30}"
-                ng-click="refresh = 30; startAutoRefresh()">Refresh every 30m</a></li>
-            <li><a class="dropdown-item" ng-class="{'dropdown-item-checked': refresh == 60}"
-                ng-click="refresh = 60; startAutoRefresh()">Refresh every hour</a></li>
           </ul>
         </div>
       </div>
@@ -105,7 +95,7 @@
           <tr ng-repeat="warrant in warrantList" style="text-align:center;">
             <td><a class="green shortinfo" ng-click="warrantInfo(warrant, $event)" title="View calculator"><i
                   class="glyphicon glyphicon-plus-sign"></a></td>
-            <td>{{warrant.name}}</td>
+            <td>{{warrant.warrant}}</td>
             <td>{{warrant.expirationDate}}</td>
             <td>{{warrant.volume.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
             <td>{{warrant.foreignBuy.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
@@ -130,26 +120,28 @@
               ng-style="{ color: (warrant.editor.estimatedPrice.newWarrantProfit||warrant.estimatedProfit) > 0 ? 'green': 'red' };">
               <b>{{(warrant.editor.estimatedPrice.newWarrantProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
             </td>
-            <td class="clearfix">
-              <span
-                ng-style="{ color: (warrant.editor.estimatedPrice.newSharePrice||warrant.shareEstimatedPrice) > warrant.breakEvenPrice ? 'green': 'red' };"
-                data-ng-hide="warrant.editor.estimatedPrice.editMode"><b>{{(warrant.editor.estimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
-                  {maximumFractionDigits: 0})}}</b></span>
-              <input type="text"
-                placeholder="{{warrant.shareEstimatedPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}"
-                data-ng-show="warrant.editor.estimatedPrice.editMode"
-                data-ng-model="warrant.editor.estimatedPrice.newSharePrice" data-ng-required
-                ng-change='editEstimatedPrice(warrant)' size="6" />
-              <div class="pull-right center-block media-middle">
-                <button type="submit" data-ng-hide="warrant.editor.estimatedPrice.editMode"
-                  class="btn btn-default btn-xs" ng-click=" openEstimatedPriceEditor(warrant);"><i
-                    class="glyphicon glyphicon-pencil"></i></button>
-                <button type="submit" data-ng-show="warrant.editor.estimatedPrice.editMode"
-                  class="btn btn-success btn-xs" ng-click="saveEstimatedPrice(warrant);"><i
-                    class="glyphicon glyphicon-ok"></i></button>
-                <button type="submit" data-ng-show="warrant.editor.estimatedPrice.editMode"
-                  class="btn btn-danger btn-xs" ng-click="cancelEstimatedPriceEditor(warrant);"><i
-                    class="glyphicon glyphicon-remove"></i></button>
+            <td>
+              <div class="clearfix">
+                <span
+                  ng-style="{ color: (warrant.editor.estimatedPrice.newSharePrice||warrant.shareEstimatedPrice) > warrant.breakEvenPrice ? 'green': 'red' };"
+                  data-ng-hide="warrant.editor.estimatedPrice.editMode"><b>{{(warrant.editor.estimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
+                    {maximumFractionDigits: 0})}}</b></span>
+                <input type="text"
+                  placeholder="{{warrant.shareEstimatedPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}"
+                  data-ng-show="warrant.editor.estimatedPrice.editMode"
+                  data-ng-model="warrant.editor.estimatedPrice.newSharePrice" data-ng-required
+                  ng-change='editEstimatedPrice(warrant)' size="6" />
+                <div class="pull-right center-block media-middle">
+                  <button type="submit" data-ng-hide="warrant.editor.estimatedPrice.editMode"
+                    class="btn btn-default btn-xs" ng-click=" openEstimatedPriceEditor(warrant);"><i
+                      class="glyphicon glyphicon-pencil"></i></button>
+                  <button type="submit" data-ng-show="warrant.editor.estimatedPrice.editMode"
+                    class="btn btn-success btn-xs" ng-click="saveEstimatedPrice(warrant);"><i
+                      class="glyphicon glyphicon-ok"></i></button>
+                  <button type="submit" data-ng-show="warrant.editor.estimatedPrice.editMode"
+                    class="btn btn-danger btn-xs" ng-click="cancelEstimatedPriceEditor(warrant);"><i
+                      class="glyphicon glyphicon-remove"></i></button>
+                </div>
               </div>
             </td>
           </tr>

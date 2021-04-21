@@ -1,3 +1,6 @@
 {
-  "esversion": 6
+  "esversion": 6,
+  "undef": true,  // No undefined variables
+  "unused": true, // Cannot use a variable before it's defined
+  "asi": true     // Require semicolons
 }
