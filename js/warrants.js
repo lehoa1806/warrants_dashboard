@@ -1,5 +1,36 @@
 app = angular.module('Dashboard');
 
+
+app.controller('AddWarrantToWatchlist', function ($scope, $uibModalInstance, warrant, GlobalService) {
+  $scope.warrant = warrant;
+  $scope.GlobalService = GlobalService;
+  $scope.watchlist = null;
+  $scope.ok = function () {
+    if (!$scope.watchlist) {
+      DEBUG.log('Please select a Watchlist');
+      return;
+    }
+    let warrants = getProperty($scope.GlobalService.cache.watchlists, $scope.watchlist, []);
+    if (warrants.includes(warrant.warrant)) {
+      DEBUG.log('"' + warrant.warrant + '" is already in "' + $scope.watchlist + '"');
+      return;
+    }
+    warrants.push(warrant.warrant);
+    let tWatchlist = {
+      name: !$scope.watchlist,
+      warrants: warrants,
+    }
+    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    $uibModalInstance.close();
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
+
+
+
 /*
 ========================================================================================================================
 ========================================================================================================================
@@ -7,7 +38,7 @@ app = angular.module('Dashboard');
 ========================================================================================================================
 ========================================================================================================================
 */
-app.controller('WarrantsController', function ($scope, $state, $timeout, $compile, $interval, GlobalService, DTOptionsBuilder) {
+app.controller('WarrantsController', function ($scope, $state, $timeout, $compile, $interval, $uibModal, GlobalService, DTOptionsBuilder) {
   DEBUG.log("WarrantsController here!!!");
   $scope.$state = $state;
   $scope.GlobalService = GlobalService;
@@ -48,6 +79,32 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     }
   };
 
+    /*
+  ======================================================================================================================
+  = Add Warrant to Watchlist                                                                                                   =
+  ======================================================================================================================
+  */
+  $scope.addToWatchList = function (warrant) {
+    DEBUG.log('addToWatchList');
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'addWarrantToWatchList.html',
+      controller: 'AddWarrantToWatchlist',
+      resolve: {
+        warrant: function () {
+          return warrant;
+        }
+      }
+    });
+    modalInstance.result.then(function () {
+    }, function () {
+      DEBUG.log('Modal dismissed at: ' + new Date());
+    });
+  };
+
+
+
+
   /*
   ======================================================================================================================
   = Estimated price editors                                                                                            =
@@ -55,7 +112,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   */
   $scope.updateEstimatedPrices = function () {
     GlobalService.apis.updateEstimatedPrices()
-    .catch(function (error) { DEBUG.log(error); })
+      .catch(function (error) { DEBUG.log(error); })
   }
 
   function resetEditor(warrant) {
@@ -160,15 +217,15 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
 
   $scope.reloadWarrantInfo = function () {
     GlobalService.apis.pullRealtimeWarrantInfo()
-    .then(function () {
-      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
-    })
-    .catch(function (error) { DEBUG.log(error); })
-    .finally(function () {
-      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
-      reloading = false;
-      $scope.$apply();
-    });
+      .then(function () {
+        $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
+      })
+      .catch(function (error) { DEBUG.log(error); })
+      .finally(function () {
+        if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+        reloading = false;
+        $scope.$apply();
+      });
   };
 
   function reloadWarrantInfoWithCountdown() {
@@ -201,15 +258,11 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
       return GlobalService.apis.loadWarrantInfo();
     else return Promise.resolve();
   })()
-  .then(function () {
-    $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
-  })
-  .then(function () {
-    $scope.refresh = 1;
-    $scope.startAutoRefresh();
-  })
-  .catch(function (error) { DEBUG.log(error); })
-  .finally(function () {
-    $scope.$apply();
-  });
+    .then(function () {
+      $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
+    })
+    .catch(function (error) { DEBUG.log(error); })
+    .finally(function () {
+      $scope.$apply();
+    });
 });

@@ -1,4 +1,4 @@
-var app = angular.module('Dashboard', ['datatables', 'ui.router']);
+var app = angular.module('Dashboard', ['datatables', 'ui.router', 'ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
 /*
 ========================================================================================================================
@@ -7,7 +7,8 @@ var app = angular.module('Dashboard', ['datatables', 'ui.router']);
 */
 app.directive('spinnerLoader', spinnerLoader)
   .directive('showWarrantInfo', showWarrantInfo)
-  .directive('datetimePicker', datetimePicker);
+  .directive('datetimePicker', datetimePicker)
+  .directive('uibTabControl', uibTabControl);
 
 /*
 ========================================================================================================================
@@ -21,7 +22,8 @@ app.factory('GlobalService', initGlobalService);
 = Route                                                                                                                =
 ========================================================================================================================
 */
-app.config(function ($stateProvider, $urlRouterProvider) {
+app.config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+  $locationProvider.hashPrefix('');
   $urlRouterProvider.otherwise('/');
   $stateProvider
     .state('root', {
@@ -37,7 +39,13 @@ app.config(function ($stateProvider, $urlRouterProvider) {
       views: {
         // 'sidebar': { templateUrl: 'partials/sidebar.html' },
         'container': { templateUrl: 'partials/home.html' }
-        // 'view@': { templateUrl: 'partials/home.html' }
+      },
+    })
+    .state('root.watchlists', {
+      url: '/watchlists',
+      views: {
+        // 'sidebar': { templateUrl: 'partials/sidebar.html' },
+        'container': { templateUrl: 'partials/watchlists.html' }
       },
     })
     .state('root.warrants', {

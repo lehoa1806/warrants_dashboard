@@ -3,11 +3,15 @@
     <div class="panel panel-primary dropzone">
       <ul id="breadcrumb" class="breadcrumb">
         <li ng-class="{active: $state.current.name === 'root.home'}">
-          <a ui-sref="root.home"><i class="icon-home2"
+          <a ui-sref="root.home"><i class="icomoon icon-home2 text-size-xlarge" title="Portfolio"
               ng-style="{ color: ($state.current.name === 'root.home') ? '': 'gray' };"></i></a>
         </li>
         <li ng-class="{active: $state.current.name === 'root.warrants'}">
-          <a ui-sref="root.warrants"><i class="icon-stats-dots"
+          <a ui-sref="root.watchlists"><i class="icomoon icon-bookmarks text-size-xlarge" title="Watchlists"
+              ng-style="{ color: $state.current.name === 'root.watchlists' ? '': 'gray' };"></i></a>
+        </li>
+        <li ng-class="{active: $state.current.name === 'root.warrants'}">
+          <a ui-sref="root.warrants"><i class="icomoon icon-stats-dots text-size-xlarge" title="Warrants"
               ng-style="{ color: $state.current.name === 'root.warrants' ? '': 'gray' };"></i></a>
         </li>
       </ul>

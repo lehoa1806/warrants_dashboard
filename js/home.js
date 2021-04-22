@@ -164,6 +164,9 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       .then(function () {
         loadPortfolio(GlobalService.cache);
         GlobalService.cache.history.push($scope.tradingRecord);
+        DEBUG.log('$scope.history');
+        DEBUG.log($scope.history);
+        DEBUG.log('$scope.history');
         loadStats();
         $scope.tradingRecord = {
           action: null,

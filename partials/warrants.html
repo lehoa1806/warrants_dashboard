@@ -1,13 +1,38 @@
 <div id="page-wrapper" ng-controller="WarrantsController">
+  <script type="text/ng-template" id="addWarrantToWatchList.html">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Add {{warrant.warrant}} to Watchlist!</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="page text-xl-center">
+        <div class="input-group">
+          <span class="input-group-addon"><b>Watchlist</b></span>
+          <select class="form-control" ng-model="watchlist" required>
+            <option ng-repeat="(watchlist, warrants) in GlobalService.cache.watchlists">{{watchlist}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+  </script>
+
   <div class="page-header page-header-default">
     <div class="panel panel-primary dropzone">
       <ul id="breadcrumb" class="breadcrumb">
         <li ng-class="{active: $state.current.name === 'root.home'}">
-          <a ui-sref="root.home"><i class="icon-home2"
+          <a ui-sref="root.home"><i class="icomoon icon-home2 text-size-xlarge" title="Portfolio"
               ng-style="{ color: ($state.current.name === 'root.home') ? '': 'gray' };"></i></a>
         </li>
         <li ng-class="{active: $state.current.name === 'root.warrants'}">
-          <a ui-sref="root.warrants"><i class="icon-stats-dots"
+          <a ui-sref="root.watchlists"><i class="icomoon icon-bookmarks text-size-xlarge" title="Watchlists"
+              ng-style="{ color: $state.current.name === 'root.watchlists' ? '': 'gray' };"></i></a>
+        </li>
+        <li ng-class="{active: $state.current.name === 'root.warrants'}">
+          <a ui-sref="root.warrants"><i class="icomoon icon-stats-dots text-size-xlarge" title="Warrants"
               ng-style="{ color: $state.current.name === 'root.warrants' ? '': 'gray' };"></i></a>
         </li>
       </ul>
@@ -58,41 +83,41 @@
       <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;" datatable="ng"
         dt-options="vm.dtOptions" dt-instance="vm.dtInstance">
         <colgroup>
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
+          <col width="3%" />
+          <col width="7%" />
+          <col width="8%" />
+          <col width="8%" />
+          <col width="8%" />
+          <col width="7%" />
+          <col width="6%" />
+          <col width="7%" />
+          <col width="8%" />
+          <col width="7%" />
+          <col width="8%" />
+          <col width="7%" />
+          <col width="7%" />
+          <col width="9%" />
         </colgroup>
         <thead>
           <tr>
-            <th width="" style="text-align:center;"></th>
-            <th width="" style="text-align:center;">Warrant</th>
-            <th width="" style="text-align:center;">Expiration</th>
-            <th width="" style="text-align:center;">Volume</th>
-            <th width="" style="text-align:center;">Foreign buy</th>
-            <th width="" style="text-align:center;">Reference price</th>
-            <th width="" style="text-align:center;">Up/Down</th>
-            <th width="" style="text-align:center;">Price</th>
-            <th width="" style="text-align:center;">Break-even price</th>
-            <th width="" style="text-align:center;">Current profit</th>
-            <th width="" style="text-align:center;">Share price</th>
-            <th width="" style="text-align:center;">Share profit</th>
-            <th width="" style="text-align:center;">Estimated profit</th>
-            <th width="" style="text-align:center;">Estimated</th>
+            <th></th>
+            <th style="text-align:center;" title="Warrant code">Warrant</th>
+            <th style="text-align:center;" title="Expiration date">Expiration</th>
+            <th style="text-align:center;" title="Trading volume">Volume</th>
+            <th style="text-align:center;" title="Buying volume of Foreign traders">Foreign buy</th>
+            <th style="text-align:center;" title="Reference price">Reference</th>
+            <th style="text-align:center;" title="Up/down based on reference price">Up/Down</th>
+            <th style="text-align:center;" title="Warrant price">Price</th>
+            <th style="text-align:center;" title="Break-even price">B/E price</th>
+            <th style="text-align:center;" title="Current profit: Share price vs B/E price">Curr. profit</th>
+            <th style="text-align:center;" title="Current Share price">Share price</th>
+            <th style="text-align:center;" title="Estimated Share profit">Share profit</th>
+            <th style="text-align:center;" title="Estimated Warrant profit">Est. profit</th>
+            <th style="text-align:center;" title="Estimated Share price">Estimated</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="warrant in warrantList" style="text-align:center;">
+          <tr ng-repeat="warrant in warrantList" style="text-align:center;" ng-dblclick="addToWatchList(warrant);">
             <td><a class="green shortinfo" ng-click="warrantInfo(warrant, $event)" title="View calculator"><i
                   class="glyphicon glyphicon-plus-sign"></a></td>
             <td>{{warrant.warrant}}</td>

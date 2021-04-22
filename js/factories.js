@@ -164,15 +164,17 @@ function initApis(cache, awsCredentials) {
        Watchlists: Update watchlists
      */
     updateUserInfo: function (portfolio, watchlists) {
-      // {
+      // [{
       //    warrant: 'WARRANT0',
       //    quantity: 100,
       //    acquisitionPrice: 9999,
-      //  }
+      // }]
       //
-      // {
-      //   WATCHLIST1: ['WARRANT1', 'WARRANT2'],
-      // }
+      // [{
+      //    name: WATCHLIST1,
+      //    warrants: ['WARRANT1', 'WARRANT2'],
+      //    newName: WATCHLIST2,
+      // }]
       return new Promise(function (resolve, reject) {
         let userInfo = {}
         if (portfolio && Object.keys(portfolio).length > 0) userInfo.portfolio = portfolio;
