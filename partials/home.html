@@ -26,7 +26,8 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-danger mb-1">Current market value</div>
-              <div id="marketValue" class="h5 mb-0 font-weight-bold">{{(marketValue||0).toLocaleString(undefined, {maximumFractionDigits: 0})}}</div>
+              <div id="totalMarketValue" class="h5 mb-0 font-weight-bold">
+                {{(totalMarketValue||0).toLocaleString(undefined, {maximumFractionDigits: 0})}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-hashtag fa-2x text-danger"></i>
@@ -42,7 +43,7 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-primary mb-1">Current Loss/Profit</div>
-              <div id="lossProfit" class="h5 mb-0 font-weight-bold">{{(lossProfit||0).toFixed(2)}}%</div>
+              <div id="lossProfitPercent" class="h5 mb-0 font-weight-bold">{{(lossProfitPercent||0).toFixed(2)}}%</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-percent fa-2x text-primary"></i>
@@ -58,7 +59,8 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-info mb-1">Unrealized Loss/Profit</div>
-              <div id="unrealizedLossProfit" class="h5 mb-0 font-weight-bold">{{(unrealizedLossProfit||0).toLocaleString(undefined, {maximumFractionDigits: 0})}}</div>
+              <div id="unrealizedLossProfit" class="h5 mb-0 font-weight-bold">
+                {{(unrealizedLossProfit||0).toLocaleString(undefined, {maximumFractionDigits: 0})}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-unlock-alt fa-2x text-info"></i>
@@ -74,7 +76,8 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-success mb-1">Realized Loss/Profit</div>
-              <div id="realizedLossProfit" class="h5 mb-0 font-weight-bold">{{(realizedLossProfit||0).toLocaleString(undefined, {maximumFractionDigits: 0})}}</div>
+              <div id="realizedLossProfit" class="h5 mb-0 font-weight-bold">
+                {{(realizedLossProfit||0).toLocaleString(undefined, {maximumFractionDigits: 0})}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-lock fa-2x text-success"></i>
@@ -139,7 +142,9 @@
                 <span class="input-group-addon"
                   ng-style="{ color: (tradingRecord.action == 'buy') ? 'green': (tradingRecord.action == 'sell') ? 'red': 'black' };"><b>Name</b></span>
                 <select class="form-control" ng-model="tradingRecord.warrant" required>
-                  <option ng-repeat="warrant in GlobalService.cache.warrants" ng-if="tradingRecord.action == 'buy' || GlobalService.cache.portfolio.hasOwnProperty(warrant.warrant)" value="{{warrant.warrant}}">{{warrant.warrant}}
+                  <option ng-repeat="warrant in GlobalService.cache.warrants"
+                    ng-if="tradingRecord.action == 'buy' || GlobalService.cache.portfolio.hasOwnProperty(warrant.warrant)"
+                    value="{{warrant.warrant}}">{{warrant.warrant}}
                   </option>
                 </select>
               </div>
@@ -228,14 +233,14 @@
             <td style="color:blue;"><b>{{warrant.acquisitionPrice.toLocaleString(undefined, {maximumFractionDigits:
                 0})}}</b></td>
             <td>{{warrant.marketValue.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
-            <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };">
+            <td ng-style="{ color: warrant.totalUpDown > 0 ? 'green': 'red' };">
               <b>{{warrant.price.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
             </td>
-            <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };">
-              <b>{{warrant.upDown.toFixed(2)}}%</b>
+            <td ng-style="{ color: warrant.totalUpDown > 0 ? 'green': 'red' };">
+              <b>{{warrant.totalUpDown.toFixed(2)}}%</b>
             </td>
-            <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };">
-              <b>{{warrant.lostProfit.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+            <td ng-style="{ color: warrant.totalUpDown > 0 ? 'green': 'red' };">
+              <b>{{warrant.unrealizedLossProfit.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
             </td>
           </tr>
         </tbody>
@@ -279,8 +284,7 @@
                 data-ng-show="historyEditor" required />
             </td>
 
-            <td><span ng-style="{ color: record.action == 'sell' ? 'red': 'green' };"
-                data-ng-hide="historyEditor"><i
+            <td><span ng-style="{ color: record.action == 'sell' ? 'red': 'green' };" data-ng-hide="historyEditor"><i
                   class="glyphicon {{record.action == 'sell' ? 'glyphicon-shopping-cart': 'glyphicon-usd'}}"></i></span>
               <select class="form-control" ng-model="record.action" data-ng-show="historyEditor" required>
                 <option ng-repeat="action in [{key: 'buy', value: 'Buy'}, {key: 'sell', value: 'Sell'}]"

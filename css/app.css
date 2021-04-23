@@ -6622,3 +6622,22 @@ a.text-dark:hover, a.text-dark:focus {
   --fieldBorderColor: #D1C4E9;
   --fieldBorderColorActive: #673AB7;
 }
+
+.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal::before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}

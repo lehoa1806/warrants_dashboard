@@ -36,16 +36,16 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
 
   $scope.reloadWarrantInfo = function () {
     GlobalService.apis.pullRealtimeWarrantInfo()
-    .then(function () {
-      loadPortfolio(GlobalService.cache);
-      loadStats();
-    })
-    .catch(function (error) { DEBUG.log(error); })
-    .finally(function () {
-      if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
-      reloading = false;
-      $scope.$apply();
-    });
+      .then(function () {
+        loadPortfolio(GlobalService.cache);
+        loadStats();
+      })
+      .catch(function (error) { DEBUG.log(error); })
+      .finally(function () {
+        if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
+        reloading = false;
+        $scope.$apply();
+      });
   };
 
   function reloadWarrantInfoWithCountdown() {
@@ -67,47 +67,6 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
   $scope.$on('$destroy', function () {
     $scope.stopAutoRefresh();
   });
-
-  /*
-  ======================================================================================================================
-  = Util functions                                                                                                     =
-  ======================================================================================================================
-  */
-  function loadPortfolio(cache) {
-    $scope.portfolio = [];
-    for (let warrant in cache.portfolio) {
-      if (cache.portfolio.hasOwnProperty(warrant)) {
-        let iWarrantInfo = cache.portfolio[warrant];
-        let realtimeData = cache.warrants[warrant];
-        iWarrantInfo.investmentAmount = iWarrantInfo.quantity * iWarrantInfo.acquisitionPrice;
-        iWarrantInfo.marketValue = iWarrantInfo.quantity * realtimeData.price;
-        iWarrantInfo.expirationDate = realtimeData.expirationDate;
-        iWarrantInfo.exercisePrice = realtimeData.exercisePrice;
-        iWarrantInfo.ratio = realtimeData.ratio;
-        iWarrantInfo.provider = realtimeData.provider;
-        iWarrantInfo.price = realtimeData.price;
-        iWarrantInfo.upDown = (iWarrantInfo.price / iWarrantInfo.acquisitionPrice - 1) * 100;
-        iWarrantInfo.lostProfit = (iWarrantInfo.price - iWarrantInfo.acquisitionPrice) * iWarrantInfo.quantity;
-        $scope.portfolio.push(iWarrantInfo);
-      }
-    }
-  }
-
-  function loadStats() {
-    $scope.marketValue = 0;
-    $scope.unrealizedLossProfit = 0;
-    $scope.lossProfit = 0;
-    $scope.realizedLossProfit = 0;
-    if ($scope.portfolio && $scope.portfolio.length > 0) {
-      $scope.marketValue = $scope.portfolio.map(warrant => warrant.marketValue).reduce((a, b) => (a || 0) + (b || 0));
-      $scope.unrealizedLossProfit = $scope.portfolio.map(warrant => warrant.lostProfit).reduce((a, b) => (a || 0) + (b || 0));
-      $scope.lossProfit = $scope.unrealizedLossProfit * 100 / ($scope.marketValue - $scope.unrealizedLossProfit);
-    }
-    if ($scope.history && $scope.history.length > 0) {
-      $scope.realizedLossProfit = $scope.history.map(warrant => warrant.realizedLossProfit).reduce((a, b) => (a || 0) + (b || 0));
-    }
-  }
-
 
   /*
   ======================================================================================================================
@@ -162,12 +121,12 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     let portfolioPromise = GlobalService.apis.updateUserInfo([iWarrant], null);
     Promise.all([historyPromise, portfolioPromise])
       .then(function () {
-        loadPortfolio(GlobalService.cache);
+        loadPortfolio($scope, GlobalService.cache);
+        loadStats($scope);
         GlobalService.cache.history.push($scope.tradingRecord);
         DEBUG.log('$scope.history');
         DEBUG.log($scope.history);
         DEBUG.log('$scope.history');
-        loadStats();
         $scope.tradingRecord = {
           action: null,
           warrant: null,
@@ -184,11 +143,11 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       });
   };
 
-    /*
-  ======================================================================================================================
-  = Edit history                                                                                                       =
-  ======================================================================================================================
-  */
+  /*
+======================================================================================================================
+= Edit history                                                                                                       =
+======================================================================================================================
+*/
   $scope.historyEditor = false;
   $scope.tempHistory = {};
   $scope.editHistory = function (record) {
@@ -282,8 +241,8 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       let portfolioPromise = GlobalService.apis.updateUserInfo([record], null);
       Promise.all([historyPromise, portfolioPromise])
         .then(function () {
-          loadPortfolio(GlobalService.cache);
-          loadStats();
+          loadPortfolio($scope, GlobalService.cache);
+          loadStats($scope);
           $scope.tempHistory = {};
         })
         .catch(function (error) { DEBUG.log(error); })
@@ -317,8 +276,9 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
   Promise.all([historyPromise, portfolioPromise, warrantInfoPromise])
     .then(function () {
       $scope.history = GlobalService.cache.history;
-      loadPortfolio(GlobalService.cache);
-      loadStats();
+      loadWatchlists($scope, GlobalService.cache);
+      loadPortfolio($scope, GlobalService.cache);
+      loadStats($scope);
     })
     .then(function () {
       $scope.refresh = 1;

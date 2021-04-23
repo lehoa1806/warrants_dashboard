@@ -14,7 +14,8 @@ app.controller('WatchlistRenameController', function ($scope, $timeout, $uibModa
       newName: $scope.watchlistNewName,
     }
     GlobalService.apis.updateUserInfo(null, [watchlist]);
-    GlobalService.cache.watchlists[$scope.watchlistName].watchlist = $scope.watchlistNewName;
+    delete Object.assign(GlobalService.cache.watchlists, { [$scope.watchlistNewName]: GlobalService.cache.watchlists[$scope.watchlistName] })[$scope.watchlistName];
+    GlobalService.cache.watchlists[$scope.watchlistNewName].warrant = $scope.watchlistNewName;
     $uibModalInstance.close(watchlist);
   };
   $scope.cancel = function () {
@@ -45,7 +46,6 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
     .withDisplayLength(100);
   $scope.watchlists = [];
   $scope.portfolio = [];
-  $scope.history = [];
 
   /*
   ======================================================================================================================
@@ -95,30 +95,6 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
   = Util functions                                                                                                     =
   ======================================================================================================================
   */
-  $scope.watchlists = [];
-  function loadWatchlists(cache) {
-    $scope.watchlists = [];
-    DEBUG.log(cache.warrants);
-    for (let watchlist in cache.watchlists) {
-      if (cache.watchlists.hasOwnProperty(watchlist)) {
-        let warrants = [];
-        DEBUG.log(cache.watchlists[watchlist]);
-        for (let warrant of cache.watchlists[watchlist]) {
-          DEBUG.log(warrant);
-          DEBUG.log(cache.warrants[warrant]);
-          if (cache.warrants.hasOwnProperty(warrant)) {
-            warrants.push(cache.warrants[warrant]);
-          }
-        }
-        $scope.watchlists.push({
-          watchlist: watchlist,
-          warrants: warrants,
-        });
-        DEBUG.log($scope.watchlists);
-      }
-    }
-  }
-
   /*
 ========================================================================================================================
 = Watchlists manage                                                                                                    =
@@ -156,7 +132,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
     });
     modalInstance.result
       .then(function (watchlist) {
-        for(let iWatchlist of $scope.watchlists) {
+        for (let iWatchlist of $scope.watchlists) {
           if (iWatchlist.watchlist == watchlist.name) {
             iWatchlist.watchlist = watchlist.newName;
           }
@@ -164,10 +140,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
       })
       .catch(function (error) { DEBUG.log(error); })
   };
-
-
-
-
+  å
   /*
   ======================================================================================================================
   = Load initial data for Watchlists                                                                                   =
@@ -178,20 +151,24 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
       return GlobalService.apis.loadWarrantInfo();
     else return Promise.resolve();
   })();
-  let watchlistsPromise = (function () {
-    if (!GlobalService.cache.watchlists || Object.keys(GlobalService.cache.watchlists).length == 0)
+  let userInfoPromise = (function () {
+    if (!GlobalService.cache.portfolio || Object.keys(GlobalService.cache.portfolio).length == 0 || !GlobalService.cache.watchlists || Object.keys(GlobalService.cache.watchlists).length == 0)
       return GlobalService.apis.loadUserInfo();
     else return Promise.resolve();
   })();
 
-  Promise.all([watchlistsPromise, warrantInfoPromise])
+  Promise.all([userInfoPromise, warrantInfoPromise])
     .then(function () {
       $scope.history = GlobalService.cache.history;
-      loadWatchlists(GlobalService.cache);
+      loadWatchlists($scope, GlobalService.cache);
+      loadPortfolio($scope, GlobalService.cache);
     })
     .catch(function (error) { DEBUG.log(error); })
     .finally(function () {
       $scope.$apply();
     });
+
+  DEBUG.log($scope.watchlists);
+  DEBUG.log(GlobalService.cache.watchlists);
 
 });

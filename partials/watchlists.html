@@ -70,7 +70,92 @@
     </div>
     <div class="panel-body">
       <uib-tabset active="active">
-        <uib-tab index="$index" ng-repeat="watchlist in watchlists" heading="{{watchlist.watchlist}}"
+        <uib-tab index="0" heading="Holding">
+          <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;"
+            datatable="ng" dt-options="vm.dtOptions" dt-instance="vm.dtInstance">
+            <colgroup>
+              <col width="3%" />
+              <col width="7%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="7%" />
+              <col width="6%" />
+              <col width="7%" />
+              <col width="8%" />
+              <col width="7%" />
+              <col width="8%" />
+              <col width="7%" />
+              <col width="9%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th></th>
+                <th style="text-align:center;" title="Warrant code">Warrant</th>
+                <th style="text-align:center;" title="Expiration date">Expiration</th>
+                <th style="text-align:center;" title="Trading volume">Volume</th>
+                <th style="text-align:center;" title="Buying volume of Foreign traders">Foreign buy</th>
+                <th style="text-align:center;" title="Up/down based on reference price">Up/Down</th>
+                <th style="text-align:center;" title="Warrant price">Price</th>
+                <th style="text-align:center;" title="Break-even price">B/E price</th>
+                <th style="text-align:center;" title="Current profit">Profit</th>
+                <th style="text-align:center;" title="Current Share price">Share price</th>
+                <th style="text-align:center;" title="Estimated Warrant profit">Est. profit</th>
+                <th style="text-align:center;" title="Estimated Share price">Estimated</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="warrant in portfolio" ng-if="warrant.quantity > 0" style="text-align:center;">
+                <td><a class="green shortinfo" ng-click="warrantInfo(warrant, $event)" title="View calculator"><i
+                      class="glyphicon glyphicon-plus-sign"></a></td>
+                <td>{{warrant.warrant}}</td>
+                <td>{{warrant.expirationDate}}</td>
+                <td>{{warrant.volume.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
+                <td>{{warrant.foreignBuy.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
+                <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };">
+                  <b>{{(warrant.upDown).toFixed(2)}}%</b>
+                </td>
+                <td style="color:blue;"><b>{{warrant.price.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+                </td>
+                <td ng-style="{ color: warrant.breakEvenPrice > warrant.sharePrice ? 'red': 'green' };">
+                  <b>{{warrant.breakEvenPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+                </td>
+                <td ng-style="{ color: warrant.totalUpDown > 0 ? 'green': 'red' };">
+                  <b>{{warrant.totalUpDown.toFixed(2)}}%</b>
+                </td>
+                <td><b>{{warrant.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
+                <td
+                  ng-style="{ color: (warrant.editor.estimatedPrice.newWarrantProfit||warrant.estimatedProfit) > 0 ? 'green': 'red' };">
+                  <b>{{(warrant.editor.estimatedPrice.newWarrantProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
+                </td>
+                <td>
+                  <div class="clearfix">
+                    <span
+                      ng-style="{ color: (warrant.editor.estimatedPrice.newSharePrice||warrant.shareEstimatedPrice) > warrant.breakEvenPrice ? 'green': 'red' };"
+                      data-ng-hide="warrant.editor.estimatedPrice.editMode"><b>{{(warrant.editor.estimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
+                        {maximumFractionDigits: 0})}}</b></span>
+                    <input type="text"
+                      placeholder="{{warrant.shareEstimatedPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}"
+                      data-ng-show="warrant.editor.estimatedPrice.editMode"
+                      data-ng-model="warrant.editor.estimatedPrice.newSharePrice" data-ng-required
+                      ng-change='editEstimatedPrice(warrant)' size="6" />
+                    <div class="pull-right center-block media-middle">
+                      <button type="submit" data-ng-hide="warrant.editor.estimatedPrice.editMode"
+                        class="btn btn-default btn-xs" ng-click=" openEstimatedPriceEditor(warrant);"><i
+                          class="glyphicon glyphicon-pencil"></i></button>
+                      <button type="submit" data-ng-show="warrant.editor.estimatedPrice.editMode"
+                        class="btn btn-success btn-xs" ng-click="saveEstimatedPrice(warrant);"><i
+                          class="glyphicon glyphicon-ok"></i></button>
+                      <button type="submit" data-ng-show="warrant.editor.estimatedPrice.editMode"
+                        class="btn btn-danger btn-xs" ng-click="cancelEstimatedPriceEditor(warrant);"><i
+                          class="glyphicon glyphicon-remove"></i></button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </uib-tab>
+        <uib-tab index="($index + 1)" ng-repeat="watchlist in watchlists" heading="{{watchlist.watchlist}}"
           ng-dblclick="changeWatchlistName(watchlist.watchlist);">
           <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;"
             datatable="ng" dt-options="vm.dtOptions" dt-instance="vm.dtInstance">
