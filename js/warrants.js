@@ -29,8 +29,6 @@ app.controller('AddWarrantToWatchlist', function ($scope, $uibModalInstance, war
   };
 });
 
-
-
 /*
 ========================================================================================================================
 ========================================================================================================================
@@ -47,6 +45,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   $scope.vm.dtInstance = {};
   $scope.vm.dtOptions = DTOptionsBuilder.newOptions()
     .withOption('order', [0, 'asc'])
+    .withOption('scrollX', true)
     .withOption('destroy', true)
     .withOption('responsive', true)
     .withOption('deferRender', true)

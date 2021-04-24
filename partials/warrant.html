@@ -1,12 +1,16 @@
 <div class="row" ng-controller="WarrantsController">
-  <div class="col-xl-1-2 .col-md-12">
+  <div class="col-xl-5-24 .col-md-12">
     <div class="card border-left-success shadow h-100 py-2">
-      <div class="card-body" style="height: 360px;">
+      <div class="card-body" style="height: 288px;">
         <div spinner-loader load-spinner={{loadSpinner}}></div>
         <table class="table table-striped table-bordered table-hover">
           <tr>
             <th>Provider:</th>
             <td>{{warrant.provider}}</td>
+          </tr>
+          <tr>
+            <th>Expiration:</th>
+            <td>{{warrant.expirationDate}}</td>
           </tr>
           <tr>
             <th>Exercise price:</th>
@@ -29,6 +33,15 @@
             <th>Up/Down:</th>
             <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };"><b>{{(warrant.upDown).toFixed(2)}}%</b></td>
           </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-5-24 .col-md-12">
+    <div class="card border-left-warning shadow h-100 py-2">
+      <div class="card-body" style="height: 288px;">
+        <div spinner-loader load-spinner={{loadSpinner}}></div>
+        <table class="table table-striped table-bordered table-hover">
           <tr>
             <th>Break-even price:</th>
             <td ng-style="{ color: warrant.breakEvenPrice > warrant.sharePrice ? 'red': 'green' };">
@@ -45,16 +58,6 @@
               <b>{{(warrant.currentProfit).toFixed(2)}}%</b>
             </td>
           </tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-xl-1-2 .col-md-12">
-    <div class="card border-left-info shadow h-100 py-2">
-      <div class="card-body" style="height: 360px;">
-        <div spinner-loader load-spinner={{loadSpinner}}></div>
-        <table class="table table-striped table-bordered table-hover">
           <tr>
             <th>Est. share price:</th>
             <td>
@@ -81,17 +84,17 @@
             </td>
           </tr>
           <tr>
-            <th>Est. warrant price:</th>
-            <td style="color:darkslateblue;">
-              <b>{{(warrant.editor.popUpEstimatedPrice.newWarrantPrice||warrant.estimatedPrice).toLocaleString(undefined,
-                {maximumFractionDigits: 0})}}</b>
-            </td>
-          </tr>
-          <tr>
             <th>Est. share profit:</th>
             <td
               ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit) > 0 ? 'green': 'red' };">
               <b>{{(warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit).toFixed(2)}}%</b>
+            </td>
+          </tr>
+          <tr>
+            <th>Est. warrant price:</th>
+            <td style="color:darkslateblue;">
+              <b>{{(warrant.editor.popUpEstimatedPrice.newWarrantPrice||warrant.estimatedPrice).toLocaleString(undefined,
+                {maximumFractionDigits: 0})}}</b>
             </td>
           </tr>
           <tr>
@@ -102,6 +105,131 @@
             </td>
           </tr>
         </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-1-3 .col-md-12">
+    <div class="card border-left-primary shadow h-100 py-2">
+      <div class="card-body" style="height: 288px;">
+        <div spinner-loader load-spinner={{loadSpinner}}></div>
+        <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;">
+          <colgroup>
+            <col width="" />
+            <col width="" />
+            <col width="" />
+            <col width="" />
+            <col width="" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th width="" style="text-align:center;"></th>
+              <th width="" style="text-align:center;">Share profit</th>
+              <th width="" style="text-align:center;">Share price</th>
+              <th width="" style="text-align:center;">Warrant profit</th>
+              <th width="" style="text-align:center;">Warrant price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Curr.</th>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+            </tr>
+
+            <tr>
+              <th>5%</th>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+            </tr>
+            <tr>
+              <th>10%</th>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+            </tr>
+            <tr>
+              <th>15%</th>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+            </tr>
+            <tr>
+              <th>20%</th>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+              <td>
+                <b></b>
+              </td>
+            </tr>
+            <tr
+              ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit) > 0 ? 'green': 'red' };">
+              <th>Est.</th>
+              <td>
+                <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
+              </td>
+              <td><b>{{(warrant.editor.popUpEstimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
+                  {maximumFractionDigits: 0})}}</b></td>
+              <td>
+                <b>{{(warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit).toFixed(2)}}%</b>
+              </td>
+              <td><b>{{(warrant.editor.popUpEstimatedPrice.newWarrantPrice||warrant.estimatedPrice).toLocaleString(undefined,
+                  {maximumFractionDigits: 0})}}</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-1-4 .col-md-12">
+    <div class="card border-left-info shadow h-100 py-2">
+      <div class="card-body" style="height: 288px;">
+        <div spinner-loader load-spinner={{loadSpinner}}></div>
         <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;">
           <colgroup>
             <col width="" />
@@ -145,18 +273,20 @@
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- <div class="col-xl-3-5 .col-md-12">
-    <div class="card border-left-primary shadow h-100 py-2">
-      <div class="card-body" style="height: 360px;">
-        <div spinner-loader load-spinner={{loadSpinner}}></div>
-        <div class="chart-bar">
-          <canvas id="allInfoLastSevenDays"></canvas>
+        <div>
+          <span class="pull-left"><b>Add to Watchlist:</b></span>
+          <div class="input-group col-xl-1-1 py-2">
+            <span class="input-group-addon"><b>Watchlist</b></span>
+            <select class="form-control" ng-model="watchlist" required>
+              <option ng-repeat="(watchlist, warrants) in GlobalService.cache.watchlists">{{watchlist}}</option>
+            </select>
+          </div>
+          <div class="pull-right">
+            <button class="btn btn-primary btn-sm" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning btn-sm" type="button" ng-click="cancel()">Cancel</button>
+          </div>
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
 </div>

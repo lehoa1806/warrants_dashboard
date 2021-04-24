@@ -29,6 +29,22 @@ function initAwsCredentials() {
 
 /*
 ========================================================================================================================
+= Alert                                                                                                                =
+========================================================================================================================
+*/
+function initDebug() {
+  var alerts = [];
+  return {
+    alerts: alerts,
+    close: function (index) { alerts.splice(index, 1); },
+    error: function (message) { alerts.push({ type: 'danger', msg: message }); },
+    info: function (message) { alerts.push({ type: 'success', msg: message }); },
+    warning: function (message) { alerts.push({ type: 'warning', msg: message }); },
+  };
+}
+
+/*
+========================================================================================================================
 = Cache                                                                                                                =
 ========================================================================================================================
 */
@@ -41,13 +57,13 @@ function initGlobalCache() {
   var portfolio = null;
   var history = null;
   return {
-    estimatedPrices: estimatedPrices,
     cachedEstimatedPrices: cachedEstimatedPrices,
-    warrants: warrants,
-    userName: userName,
-    watchlists: watchlists,
-    portfolio: portfolio,
+    estimatedPrices: estimatedPrices,
     history: history,
+    portfolio: portfolio,
+    userName: userName,
+    warrants: warrants,
+    watchlists: watchlists,
   };
 }
 
@@ -426,10 +442,12 @@ var initGlobalService = function () {
   var awsCredentials = initAwsCredentials();
   var cache = initGlobalCache();
   var apis = initApis(cache, awsCredentials);
+  var debug = initDebug();
   return {
     apis: apis,
     awsCredentials: awsCredentials,
     cache: cache,
+    debug: debug,
     estimatedPriceToPost: function () {
       apis.estimatedReadyToPost = true;
       var element = angular.element(document.querySelector('#EstimatedPriceToPost'));

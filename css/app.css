@@ -2,8 +2,7 @@ html {
   position: relative;
   min-height: 100%;
   background-color: #f8f9fc;
-  min-width: 1280px;
-  max-width: 1600px;
+  width: 1600px;
   margin: 0 auto !important;
   float: none !important;
 }
@@ -527,8 +526,7 @@ table.dataTable tbody tr {
   border-width: 1px 0;
   padding-left: 0;
   padding-right: 0;
-  min-width: 1280px;
-  max-width: 1600px;
+  width: 1600px;
   margin: 0 auto !important;
   float: none !important;
 }

@@ -40,6 +40,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
   $scope.vm.dtOptions = DTOptionsBuilder.newOptions()
     .withOption('order', [0, 'asc'])
     .withOption('destroy', true)
+    .withOption('scrollX', true)
     .withOption('responsive', true)
     .withOption('deferRender', true)
     .withOption('processing', true)
@@ -140,7 +141,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
       })
       .catch(function (error) { DEBUG.log(error); })
   };
-  å
+
   /*
   ======================================================================================================================
   = Load initial data for Watchlists                                                                                   =
