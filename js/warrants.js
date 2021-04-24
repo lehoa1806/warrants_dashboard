@@ -1,26 +1,33 @@
-app = angular.module('Dashboard');
+var app = angular.module('Dashboard');
 
 
 app.controller('AddWarrantToWatchlist', function ($scope, $uibModalInstance, warrant, GlobalService) {
   $scope.warrant = warrant;
   $scope.GlobalService = GlobalService;
   $scope.watchlist = null;
+  let message = '';
   $scope.ok = function () {
     if (!$scope.watchlist) {
-      DEBUG.log('Please select a Watchlist');
+      message = 'Please select a Watchlist';
+      DEBUG.log(message);
+      GlobalService.debug.warning(message);
       return;
     }
     let warrants = getProperty($scope.GlobalService.cache.watchlists, $scope.watchlist, []);
     if (warrants.includes(warrant.warrant)) {
-      DEBUG.log('"' + warrant.warrant + '" is already in "' + $scope.watchlist + '"');
+      message = '"' + warrant.warrant + '" is already in "' + $scope.watchlist + '"';
+      DEBUG.log(message);
+      GlobalService.debug.warning(message);
       return;
-    }
+      }
     warrants.push(warrant.warrant);
     let tWatchlist = {
-      name: !$scope.watchlist,
+      name: $scope.watchlist,
       warrants: warrants,
     }
     GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
+    GlobalService.debug.info(message);  
     $uibModalInstance.close();
   };
 
@@ -45,7 +52,6 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   $scope.vm.dtInstance = {};
   $scope.vm.dtOptions = DTOptionsBuilder.newOptions()
     .withOption('order', [0, 'asc'])
-    .withOption('scrollX', true)
     .withOption('destroy', true)
     .withOption('responsive', true)
     .withOption('deferRender', true)
@@ -53,32 +59,6 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     .withDisplayLength(100);
 
   /*
-  ======================================================================================================================
-  = Warrant Info Popup                                                                                                 =
-  ======================================================================================================================
-  */
-  $scope.warrantInfo = function (warrant, event) {
-    DEBUG.log("warrantInfo here!!!");
-    var scope = $scope.$new(true);
-    scope.warrant = warrant;
-    var link = angular.element(event.currentTarget),
-      icon = link.find('.glyphicon'),
-      tr = link.parent().parent(),
-      table = $scope.vm.dtInstance.DataTable,
-      row = table.row(tr);
-    if (row.child.isShown()) {
-      icon.removeClass('glyphicon-minus-sign').addClass('glyphicon-plus-sign');
-      row.child.hide();
-      tr.removeClass('shown');
-    }
-    else {
-      icon.removeClass('glyphicon-plus-sign').addClass('glyphicon-minus-sign');
-      row.child($compile('<div show-warrant-info></div>')(scope)).show();
-      tr.addClass('shown');
-    }
-  };
-
-    /*
   ======================================================================================================================
   = Add Warrant to Watchlist                                                                                                   =
   ======================================================================================================================
@@ -111,7 +91,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   */
   $scope.updateEstimatedPrices = function () {
     GlobalService.apis.updateEstimatedPrices()
-      .catch(function (error) { DEBUG.log(error); })
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
   }
 
   function resetEditor(warrant) {
@@ -155,9 +135,30 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
 
   /*
   ======================================================================================================================
-  = PopUp Estimated price editors                                                                                      =
+  = Warrant Info Popup                                                                                                 =
   ======================================================================================================================
   */
+  $scope.warrantInfo = function (warrant, event) {
+    DEBUG.log("warrantInfo here!!!");
+    var scope = $scope.$new(true);
+    scope.warrant = warrant;
+    var link = angular.element(event.currentTarget),
+      icon = link.find('.glyphicon'),
+      tr = link.parent().parent(),
+      table = $scope.vm.dtInstance.DataTable,
+      row = table.row(tr);
+    if (row.child.isShown()) {
+      icon.removeClass('glyphicon-minus-sign').addClass('glyphicon-plus-sign');
+      row.child.hide();
+      tr.removeClass('shown');
+    }
+    else {
+      icon.removeClass('glyphicon-plus-sign').addClass('glyphicon-minus-sign');
+      row.child($compile('<div show-warrant-info></div>')(scope)).show();
+      tr.addClass('shown');
+    }
+  };
+
   function resetPopupEditor(warrant) {
     warrant.editor.popUpEstimatedPrice = {
       editMode: false,
@@ -204,6 +205,31 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     warrant.editor.popUpEstimatedPrice.buyingPrice.profit = (shareEstimatedPrice / buyingPrice - 1) * 100;
   };
 
+  $scope.addWarrantToWatchlist = function (warrant) {
+    let message = '';
+    if (!$scope.watchlist) {
+      message = 'Please select a Watchlist';
+      DEBUG.log(message);
+      GlobalService.debug.warning(message);
+      return;
+    }
+    let warrants = getProperty($scope.GlobalService.cache.watchlists, $scope.watchlist, []);
+    if (warrants.includes(warrant.warrant)) {
+      message = '"' + warrant.warrant + '" is already in "' + $scope.watchlist + '"';
+      DEBUG.log(message);
+      GlobalService.debug.warning(message);
+      return;
+    }
+    warrants.push(warrant.warrant);
+    let tWatchlist = {
+      name: $scope.watchlist,
+      warrants: warrants,
+    }
+    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
+    GlobalService.debug.info(message);
+  };
+
   /*
   ======================================================================================================================
   = Refresh data                                                                                                       =
@@ -219,7 +245,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
       .then(function () {
         $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
       })
-      .catch(function (error) { DEBUG.log(error); })
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
       .finally(function () {
         if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
         reloading = false;
@@ -260,7 +286,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     .then(function () {
       $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
     })
-    .catch(function (error) { DEBUG.log(error); })
+    .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
     .finally(function () {
       $scope.$apply();
     });

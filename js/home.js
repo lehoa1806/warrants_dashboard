@@ -89,6 +89,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       if ($scope.tradingRecord.action == 'sell') {
         let message = 'Error!!! Selling nonexisting warrant.';
         DEBUG.log(message);
+        GlobalService.debug.error(message);
         return;
       }
       iWarrant = {
@@ -103,6 +104,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
         if (iWarrant.quantity < $scope.tradingRecord.quantity) {
           let message = 'Error!!! You don\'t have enough shares to sell.';
           DEBUG.log(message);
+          GlobalService.debug.error(message);
           return;
         }
         iWarrant.quantity -= $scope.tradingRecord.quantity;
@@ -121,11 +123,12 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     let portfolioPromise = GlobalService.apis.updateUserInfo([iWarrant], null);
     Promise.all([historyPromise, portfolioPromise])
       .then(function () {
-        loadPortfolio($scope, GlobalService.cache);
+        loadPortfolio($scope, GlobalService);
         loadStats($scope);
         GlobalService.cache.history.push($scope.tradingRecord);
         DEBUG.log('$scope.history');
         DEBUG.log($scope.history);
+        GlobalService.debug.error($scope.history);
         DEBUG.log('$scope.history');
         $scope.tradingRecord = {
           action: null,
@@ -137,7 +140,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
           acquisitionPrice: null,
         };
       })
-      .catch(function (error) { DEBUG.log(error); })
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
       .finally(function () {
         $scope.$apply();
       });
@@ -183,6 +186,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       if (record.action == 'sell') {
         let message = 'Error!!! Selling nonexisting warrant.';
         DEBUG.log(message);
+        GlobalService.debug.error(message);
         $scope.resetHistory(record);
         return;
       }
@@ -200,6 +204,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
           if (iWarrant.quantity < record.quantity) {
             let message = 'Error!!! You don\'t have enough shares to sell.';
             DEBUG.log(message);
+            GlobalService.debug.error(message);
             $scope.resetHistory(record);
             return;
           }
@@ -220,6 +225,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
           if (iWarrant.quantity < record.quantity) {
             let message = 'Error!!! You don\'t have enough shares to sell.';
             DEBUG.log(message);
+            GlobalService.debug.error(message);
             $scope.resetHistory(record);
             return;
           }
@@ -241,11 +247,11 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       let portfolioPromise = GlobalService.apis.updateUserInfo([record], null);
       Promise.all([historyPromise, portfolioPromise])
         .then(function () {
-          loadPortfolio($scope, GlobalService.cache);
+          loadPortfolio($scope, GlobalService);
           loadStats($scope);
           $scope.tempHistory = {};
         })
-        .catch(function (error) { DEBUG.log(error); })
+        .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
         .finally(function () {
           $scope.$apply();
         });
@@ -276,15 +282,15 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
   Promise.all([historyPromise, portfolioPromise, warrantInfoPromise])
     .then(function () {
       $scope.history = GlobalService.cache.history;
-      loadWatchlists($scope, GlobalService.cache);
-      loadPortfolio($scope, GlobalService.cache);
+      loadWatchlists($scope, GlobalService);
+      loadPortfolio($scope, GlobalService);
       loadStats($scope);
     })
     .then(function () {
-      $scope.refresh = 1;
+      $scope.refresh = 5;
       $scope.startAutoRefresh();
     })
-    .catch(function (error) { DEBUG.log(error); })
+    .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
     .finally(function () {
       $scope.$apply();
     });

@@ -9,7 +9,9 @@ function showWarrantInfo($compile) {
     restrict: 'A',
     templateUrl: 'partials/warrant.html',
     transclude: true,
-    link: function (scope, element, attributes) { }
+    link: function (scope, element, attributes) {
+
+    }
   };
 }
 

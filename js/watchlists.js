@@ -36,11 +36,10 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
   $scope.$state = $state;
   $scope.GlobalService = GlobalService;
   $scope.vm = {};
-  $scope.vm.dtInstance = {};
+  $scope.vm.dtInstances = {};
   $scope.vm.dtOptions = DTOptionsBuilder.newOptions()
     .withOption('order', [0, 'asc'])
     .withOption('destroy', true)
-    .withOption('scrollX', true)
     .withOption('responsive', true)
     .withOption('deferRender', true)
     .withOption('processing', true)
@@ -63,7 +62,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
       .then(function () {
         $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
       })
-      .catch(function (error) { DEBUG.log(error); })
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
       .finally(function () {
         if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
         reloading = false;
@@ -93,14 +92,101 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
 
   /*
   ======================================================================================================================
-  = Util functions                                                                                                     =
+  = Warrant Info Popup                                                                                                 =
   ======================================================================================================================
   */
+  $scope.warrantInfo = function (warrant, id, event) {
+    DEBUG.log("warrantInfo here!!!");
+    var scope = $scope.$new(true);
+    scope.warrant = warrant;
+    scope.watchlist = id == 0 ? { watchlist: 'holding' } : $scope.watchlists[id - 1];
+    var link = angular.element(event.currentTarget), table = $scope.vm.dtInstances[id].DataTable;
+    scope.icon = link.find('.glyphicon');
+    scope.tr = link.parent().parent();
+    scope.row = table.row(scope.tr);
+    if (scope.row.child.isShown()) {
+      scope.icon.removeClass('glyphicon-minus-sign').addClass('glyphicon-plus-sign');
+      scope.row.child.hide();
+      scope.tr.removeClass('shown');
+    }
+    else {
+      scope.icon.removeClass('glyphicon-plus-sign').addClass('glyphicon-minus-sign');
+      scope.row.child($compile('<div show-warrant-info></div>')(scope)).show();
+      scope.tr.addClass('shown');
+    }
+  };
+
+  function resetPopupEditor(warrant) {
+    warrant.editor.popUpEstimatedPrice = {
+      editMode: false,
+      newSharePrice: null,
+      newShareProfit: null,
+      newWarrantPrice: null,
+      newWarrantProfit: null,
+    };
+  }
+  $scope.openPopUpEstimatedPriceEditor = function (warrant) {
+    DEBUG.log('openPopUpEstimatedPriceEditor');
+    warrant.editor.popUpEstimatedPrice.editMode = true;
+  };
+  $scope.cancelPopUpEstimatedPriceEditor = function (warrant) {
+    DEBUG.log('cancelPopUpEstimatedPriceEditor');
+    resetPopupEditor(warrant);
+  };
+  $scope.editPopUpEstimatedPrice = function (warrant) {
+    DEBUG.log('editPopUpEstimatedPrice');
+    warrant.editor.popUpEstimatedPrice.newWarrantPrice = (parseFloat(warrant.editor.popUpEstimatedPrice.newSharePrice) - warrant.exercisePrice) / warrant.ratio;
+    warrant.editor.popUpEstimatedPrice.newWarrantProfit = (warrant.editor.popUpEstimatedPrice.newWarrantPrice / warrant.price - 1) * 100;
+    warrant.editor.popUpEstimatedPrice.newShareProfit = (warrant.editor.popUpEstimatedPrice.newSharePrice / warrant.sharePrice - 1) * 100;
+  };
+  $scope.savePopUpEstimatedPrice = function (warrant) {
+    DEBUG.log('savePopUpEstimatedPrice');
+    if (warrant.editor.popUpEstimatedPrice.newSharePrice) {
+      let newSharePrice = parseFloat(warrant.editor.popUpEstimatedPrice.newSharePrice);
+      if (warrant.shareEstimatedPrice != newSharePrice) {
+        GlobalService.cache.cachedEstimatedPrices[warrant.warrant] = newSharePrice;
+        warrant.shareEstimatedPrice = newSharePrice;
+        warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
+        warrant.estimatedPrice = warrant.editor.popUpEstimatedPrice.newWarrantPrice;
+        warrant.estimatedProfit = warrant.editor.popUpEstimatedPrice.newWarrantProfit;
+        GlobalService.estimatedPriceToPost();
+      }
+    }
+    resetPopupEditor(warrant);
+  };
+
+  $scope.editPopUpBuyingPrice = function (warrant) {
+    DEBUG.log('editPopUpBuyingPrice');
+    var shareEstimatedPrice = warrant.editor.popUpEstimatedPrice.newWarrantPrice || warrant.estimatedPrice;
+    var buyingPrice = warrant.editor.popUpEstimatedPrice.buyingPrice.price || warrant.price;
+    warrant.editor.popUpEstimatedPrice.buyingPrice.profit = (shareEstimatedPrice / buyingPrice - 1) * 100;
+  };
+
+  $scope.removeWarrantFromWatchlist = function (warrant) {
+    let warrants = getProperty($scope.GlobalService.cache.watchlists, $scope.watchlist, []);
+    warrants.pop(warrant.warrant);
+    let tWatchlist = {
+      name: $scope.watchlist,
+      warrants: warrants,
+    }
+    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    let message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
+    GlobalService.debug.info(message);
+  };
+
   /*
-========================================================================================================================
-= Watchlists manage                                                                                                    =
-========================================================================================================================
-*/
+  ======================================================================================================================
+  = Watchlists manage                                                                                                  =
+  ======================================================================================================================
+  */
+  // Multiple Databases
+  $scope.setDtInstances = function () {
+    $scope.vm.dtInstances[0] = {};
+    for (let i = 1; i <= $scope.watchlists.length; i++) {
+      $scope.vm.dtInstances[i] = {};
+    }
+  }
+
   $scope.createNewWatchlist = function () {
     DEBUG.log('Create a new Watchlist');
     var newWatchlist = {
@@ -139,7 +225,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
           }
         }
       })
-      .catch(function (error) { DEBUG.log(error); })
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
   };
 
   /*
@@ -161,15 +247,16 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
   Promise.all([userInfoPromise, warrantInfoPromise])
     .then(function () {
       $scope.history = GlobalService.cache.history;
-      loadWatchlists($scope, GlobalService.cache);
-      loadPortfolio($scope, GlobalService.cache);
+      loadWatchlists($scope, GlobalService);
+      loadPortfolio($scope, GlobalService);
+      $scope.setDtInstances();
     })
-    .catch(function (error) { DEBUG.log(error); })
+    .then(function () {
+      $scope.refresh = 1;
+      $scope.startAutoRefresh();
+    })
+    .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
     .finally(function () {
       $scope.$apply();
     });
-
-  DEBUG.log($scope.watchlists);
-  DEBUG.log(GlobalService.cache.watchlists);
-
 });

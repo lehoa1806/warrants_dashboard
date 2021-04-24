@@ -1,4 +1,4 @@
-<div class="row" ng-controller="WarrantsController">
+<div class="row" ng-controller="WarrantEditorController">
   <div class="col-xl-5-24 .col-md-12">
     <div class="card border-left-success shadow h-100 py-2">
       <div class="card-body" style="height: 288px;">
@@ -274,16 +274,29 @@
           </tbody>
         </table>
         <div>
-          <span class="pull-left"><b>Add to Watchlist:</b></span>
-          <div class="input-group col-xl-1-1 py-2">
-            <span class="input-group-addon"><b>Watchlist</b></span>
-            <select class="form-control" ng-model="watchlist" required>
-              <option ng-repeat="(watchlist, warrants) in GlobalService.cache.watchlists">{{watchlist}}</option>
-            </select>
+          <div data-ng-show="$state.current.name === 'root.warrants'">
+            <span class="pull-left"><b>Add to Watchlist:</b></span>
+            <div class="input-group col-xl-1-1 py-2">
+              <span class="input-group-addon"><b>Watchlist</b></span>
+              <select class="form-control" ng-model="watchlist" required>
+                <option ng-repeat="(watchlist, warrants) in GlobalService.cache.watchlists">{{watchlist}}</option>
+              </select>
+            </div>
+            <div class="pull-right">
+              <button class="btn btn-primary btn-sm" type="submit"
+                ng-click="addWarrantToWatchlist(warrant);">Submit</button>
+            </div>
           </div>
-          <div class="pull-right">
-            <button class="btn btn-primary btn-sm" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning btn-sm" type="button" ng-click="cancel()">Cancel</button>
+          <div data-ng-show="$state.current.name === 'root.watchlists' && watchlist.watchlist !== 'holding'">
+            <button type="button" class="btn btn-default mb-2" ng-click="isRemoveCollapsed = !isRemoveCollapsed">Remove {{warrant.warrant}} from this Watchlist</button>
+            <div uib-collapse="!isRemoveCollapsed">
+              <div class="well well-sm">
+                <button class="btn btn-primary btn-sm" type="button"
+                ng-click="removeWarrantFromWatchlist(warrant); isRemoveCollapsed = !isRemoveCollapsed">Confirm</button>
+                <button class="btn btn-warning btn-sm" type="button"
+                ng-click="isRemoveCollapsed = !isRemoveCollapsed;">Cancel</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

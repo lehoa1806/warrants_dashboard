@@ -43,12 +43,18 @@ function getASimpleRandomString() {
 = Utils                                                                                                                =
 ========================================================================================================================
 */
-function loadPortfolio(scope, cache) {
+function loadPortfolio(scope, GlobalService) {
   scope.portfolio = [];
-  for (let warrant in cache.portfolio) {
-    if (cache.portfolio.hasOwnProperty(warrant)) {
-      let iWarrantInfo = cache.portfolio[warrant];
-      let realtimeData = cache.warrants[warrant];
+  for (let warrant in GlobalService.cache.portfolio) {
+    if (GlobalService.cache.portfolio.hasOwnProperty(warrant)) {
+      let iWarrantInfo = GlobalService.cache.portfolio[warrant];
+      if (Object.keys(GlobalService.cache.warrants) == 0 || !getProperty(GlobalService.cache.warrants, warrant, null)) {
+        message = warrant + ' is missing from the Global Warrants';
+        DEBUG.log(message);
+        GlobalService.debug.warning(message);
+        continue;
+      }
+      let realtimeData = GlobalService.cache.warrants[warrant];
       iWarrantInfo.investmentAmount = iWarrantInfo.quantity * iWarrantInfo.acquisitionPrice;
       iWarrantInfo.marketValue = iWarrantInfo.quantity * realtimeData.price;
       iWarrantInfo.totalUpDown = (realtimeData.price / iWarrantInfo.acquisitionPrice - 1) * 100;
@@ -58,14 +64,14 @@ function loadPortfolio(scope, cache) {
   }
 }
 
-function loadWatchlists(scope, cache) {
+function loadWatchlists(scope, GlobalService) {
   scope.watchlists = [];
-  for (let watchlist in cache.watchlists) {
-    if (cache.watchlists.hasOwnProperty(watchlist)) {
+  for (let watchlist in GlobalService.cache.watchlists) {
+    if (GlobalService.cache.watchlists.hasOwnProperty(watchlist)) {
       let warrants = [];
-      for (let warrant of cache.watchlists[watchlist]) {
-        if (cache.warrants.hasOwnProperty(warrant)) {
-          warrants.push(cache.warrants[warrant]);
+      for (let warrant of GlobalService.cache.watchlists[watchlist]) {
+        if (GlobalService.cache.warrants.hasOwnProperty(warrant)) {
+          warrants.push(GlobalService.cache.warrants[warrant]);
         }/*  */
       }
       scope.watchlists.push({

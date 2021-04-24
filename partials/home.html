@@ -182,16 +182,9 @@
           <col width="" />
           <col width="" />
           <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
-          <col width="" />
         </colgroup>
         <thead>
           <tr>
-            <th width="" style="text-align:center;"></th>
             <th width="" style="text-align:center;">Warrant</th>
             <th width="" style="text-align:center;">Expiration</th>
             <th width="" style="text-align:center;">Quantity</th>
@@ -205,8 +198,6 @@
         </thead>
         <tbody>
           <tr ng-repeat="warrant in portfolio" ng-if="warrant.quantity > 0" style="text-align:center;">
-            <td><a class="green shortinfo" ng-click="warrantInfo(warrant, $event)" title="View calculator"><i
-                  class="glyphicon glyphicon-plus-sign"></a></td>
             <td>{{warrant.warrant}}</td>
             <td>{{warrant.expirationDate}}</td>
             <td>{{warrant.quantity.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
