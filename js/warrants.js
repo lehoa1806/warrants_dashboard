@@ -19,7 +19,7 @@ app.controller('AddWarrantToWatchlist', function ($scope, $uibModalInstance, war
       DEBUG.log(message);
       GlobalService.debug.warning(message);
       return;
-      }
+    }
     warrants.push(warrant.warrant);
     let tWatchlist = {
       name: $scope.watchlist,
@@ -27,7 +27,7 @@ app.controller('AddWarrantToWatchlist', function ($scope, $uibModalInstance, war
     }
     GlobalService.apis.updateUserInfo(null, [tWatchlist]);
     message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
-    GlobalService.debug.info(message);  
+    GlobalService.debug.info(message);
     $uibModalInstance.close();
   };
 
@@ -81,8 +81,39 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     });
   };
 
-
-
+  /*
+  ======================================================================================================================
+  = Filter                                                                                                             =
+  ======================================================================================================================
+  */
+  $scope.warrantFilter = { startDate: null, endDate: null };
+  var rendering = false;
+  var renderCallback = function () {
+    rendering = true;
+  }
+  var render = function () {
+    if ($scope.vm.dtInstance.rerender && !rendering) {
+      $scope.vm.dtInstance.rerender(renderCallback);
+    }
+  };
+  $scope.$watch('warrantFilter.startDate', function () {
+    if ($scope.warrantFilter.startDate == '' || $scope.warrantFilter.startDate == 'Invalid date') {
+      $scope.warrantFilter.startDate = null;
+    }
+    render();
+  });
+  $scope.$watch('warrantFilter.endDate', function () {
+    if ($scope.warrantFilter.endDate == '' || $scope.warrantFilter.endDate == 'Invalid date') {
+      $scope.warrantFilter.endDate = null;
+    }
+    render();
+  });
+  $scope.applyFilter = function () {
+    render();
+  }
+  $scope.resetFilter = function () {
+    $scope.warrantFilter = { startDate: null, endDate: null };
+  }
 
   /*
   ======================================================================================================================

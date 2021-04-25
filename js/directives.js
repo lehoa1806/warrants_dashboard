@@ -48,8 +48,15 @@ function datetimePicker() {
     link: function (scope, element, attributes, ngModel) {
       element.datetimepicker({ format: 'YYYY-MM-DD' })
         .on('dp.change', function (value) {
-          ngModel.$setViewValue(moment(value.date).format('YYYY-MM-DD'));
-          scope.$apply()
+          try {
+            ngModel.$setViewValue(moment(value.date).format('YYYY-MM-DD'));
+          }
+          catch (error){
+            DEBUG.log(error.message || JSON.stringify(error));
+          }
+          finally {
+            scope.$apply();
+          }
         });
     }
   };
