@@ -22,7 +22,7 @@
       <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Watchlists</h4>
       <div class="btn-toolbar align-middle pull-right" role="toolbar">
         <div class="btn-group">
-          <button type="button" id="EstimatedPriceToPost" class="btn btn-success"
+          <button type="button" id="EstimatedPriceToPost" class="btn {{GlobalService.apis.estimatedReadyToPost? 'btn-warning': 'btn-success'}}"
             title="Save the Estimated Prices to Database"
             ng-click="updateEstimatedPrices(); GlobalService.estimatedPricePostDone();"
             style="pointer-events: auto; height: 33px;"><span class="glyphicon glyphicon-saved"></span>

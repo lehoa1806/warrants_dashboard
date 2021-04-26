@@ -133,6 +133,10 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
         warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
         warrant.estimatedPrice = warrant.editor.estimatedPrice.newWarrantPrice;
         warrant.estimatedProfit = warrant.editor.estimatedPrice.newWarrantProfit;
+        GlobalService.cache.warrants[warrant.warrant].shareEstimatedPrice = warrant.shareEstimatedPrice;
+        GlobalService.cache.warrants[warrant.warrant].shareEstimatedProfit = warrant.shareEstimatedProfit;
+        GlobalService.cache.warrants[warrant.warrant].estimatedPrice = warrant.estimatedPrice;
+        GlobalService.cache.warrants[warrant.warrant].estimatedProfit = warrant.estimatedProfit;
         GlobalService.estimatedPriceToPost();
       }
     }
@@ -198,6 +202,10 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
         warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
         warrant.estimatedPrice = warrant.editor.popUpEstimatedPrice.newWarrantPrice;
         warrant.estimatedProfit = warrant.editor.popUpEstimatedPrice.newWarrantProfit;
+        GlobalService.cache.warrants[warrant.warrant].shareEstimatedPrice = warrant.shareEstimatedPrice;
+        GlobalService.cache.warrants[warrant.warrant].shareEstimatedProfit = warrant.shareEstimatedProfit;
+        GlobalService.cache.warrants[warrant.warrant].estimatedPrice = warrant.estimatedPrice;
+        GlobalService.cache.warrants[warrant.warrant].estimatedProfit = warrant.estimatedProfit;
         GlobalService.estimatedPriceToPost();
       }
     }
