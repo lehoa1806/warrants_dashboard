@@ -60,13 +60,15 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
   $scope.reloadWarrantInfo = function () {
     GlobalService.apis.pullRealtimeWarrantInfo()
       .then(function () {
-        $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
+        loadWatchlists($scope, GlobalService);
+        loadPortfolio($scope, GlobalService);
       })
       .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
       .finally(function () {
         if ($scope.refresh) $scope.intervalSeconds = $scope.refresh * 60;
         reloading = false;
         $scope.$apply();
+        $scope.activeIndex = $scope.currActive;
       });
   };
 
@@ -90,7 +92,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
     $scope.stopAutoRefresh();
   });
 
-    /*
+  /*
   ======================================================================================================================
   = Estimated price editors                                                                                            =
   ======================================================================================================================
@@ -244,6 +246,14 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
     }
   }
 
+  // Set/store the current active tab
+  $scope.currActive = 0;
+  $scope.activeIndex = $scope.currActive;
+  $scope.setActiveIndex = function (id) {
+    $scope.currActive = parseInt(id);
+  };
+
+  // Manage Watchlists
   $scope.createNewWatchlist = function () {
     DEBUG.log('Create a new Watchlist');
     var newWatchlist = {
