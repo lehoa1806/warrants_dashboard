@@ -127,98 +127,102 @@
           </colgroup>
           <thead>
             <tr>
-              <th width="" style="text-align:center;"></th>
-              <th width="" style="text-align:center;">Share profit</th>
-              <th width="" style="text-align:center;">Share price</th>
-              <th width="" style="text-align:center;">Warrant profit</th>
-              <th width="" style="text-align:center;">Warrant price</th>
+              <th width="" style="text-align:center;">Share %</th>
+              <th width="" style="text-align:center;">Share $</th>
+              <th width="" style="text-align:center;">N/A</th>
+              <th width="" style="text-align:center;">Warrant %</th>
+              <th width="" style="text-align:center;">Warrant $</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th>Curr.</th>
+            <tr style="color:blue;">
+              <td>Curr. <b>0%</b></td>
               <td>
-                <b></b>
+                <b>{{warrant.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
               <td>
-                <b></b>
+                <b>N/A</b>
               </td>
               <td>
-                <b></b>
+                <b>0%</b>
               </td>
               <td>
-                <b></b>
+                <b>{{warrant.price.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
             </tr>
 
             <tr>
-              <th>5%</th>
+              <td><b>5%</b></td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p5.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
               <td>
-                <b></b>
+                <b>N/A</b>
               </td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p5.warrantProfit.toFixed(2)}}</b>%
               </td>
               <td>
-                <b></b>
-              </td>
-            </tr>
-            <tr>
-              <th>10%</th>
-              <td>
-                <b></b>
-              </td>
-              <td>
-                <b></b>
-              </td>
-              <td>
-                <b></b>
-              </td>
-              <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p5.warrantPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
             </tr>
             <tr>
-              <th>15%</th>
+              <td><b>10%</b></td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p10.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
               <td>
-                <b></b>
+                <b>N/A</b>
               </td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p10.warrantProfit.toFixed(2)}}</b>%
               </td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p10.warrantPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
             </tr>
+            </tr>
             <tr>
-              <th>20%</th>
+              <td><b>15%</b></td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p15.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
               <td>
-                <b></b>
+                <b>N/A</b>
               </td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p15.warrantProfit.toFixed(2)}}</b>%
               </td>
               <td>
-                <b></b>
+                <b>{{warrant.priceSteps.p15.warrantPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
               </td>
+            </tr>
+            </tr>
+            <tr>
+              <td><b>20%</b></td>
+              <td>
+                <b>{{warrant.priceSteps.p20.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+              </td>
+              <td>
+                <b>N/A</b>
+              </td>
+              <td>
+                <b>{{warrant.priceSteps.p20.warrantProfit.toFixed(2)}}</b>%
+              </td>
+              <td>
+                <b>{{warrant.priceSteps.p20.warrantPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
+              </td>
+            </tr>
             </tr>
             <tr
               ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit) > 0 ? 'green': 'red' };">
-              <th>Est.</th>
-              <td>
-                <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
+              <td>Est. <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}</b>%
               </td>
               <td><b>{{(warrant.editor.popUpEstimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
                   {maximumFractionDigits: 0})}}</b></td>
+              <td>
+                <b>N/A</b>
+              </td>
               <td>
                 <b>{{(warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit).toFixed(2)}}%</b>
               </td>
@@ -242,9 +246,9 @@
           </colgroup>
           <thead>
             <tr>
-              <td width="" style="text-align:center;">#</td>
-              <td width="" style="text-align:center;">Buying price</td>
-              <td width="" style="text-align:center;">Profit</td>
+              <th width="" style="text-align:center;">#</th>
+              <th width="" style="text-align:center;">Buying price</th>
+              <th width="" style="text-align:center;">Profit</th>
             </tr>
           </thead>
           <tbody>
@@ -287,17 +291,19 @@
               </select>
             </div>
             <div class="pull-right">
-              <button class="btn btn-primary btn-sm" type="submit" data-ng-show="watchlist" ng-click="addWarrantToWatchlist(warrant);">Submit</button>
+              <button class="btn btn-primary btn-sm" type="submit" data-ng-show="watchlist"
+                ng-click="addWarrantToWatchlist(warrant);">Submit</button>
             </div>
           </div>
           <div data-ng-show="$state.current.name === 'root.watchlists' && watchlist.watchlist !== 'holding'">
-            <button type="button" class="btn btn-default mb-2" ng-click="isRemoveCollapsed = !isRemoveCollapsed">Remove {{warrant.warrant}} from this Watchlist</button>
+            <button type="button" class="btn btn-default mb-2" ng-click="isRemoveCollapsed = !isRemoveCollapsed">Remove
+              {{warrant.warrant}} from this Watchlist</button>
             <div uib-collapse="!isRemoveCollapsed">
               <div class="well well-sm">
                 <button class="btn btn-primary btn-sm" type="button"
-                ng-click="removeWarrantFromWatchlist(warrant); isRemoveCollapsed = !isRemoveCollapsed">Confirm</button>
+                  ng-click="removeWarrantFromWatchlist(warrant); isRemoveCollapsed = !isRemoveCollapsed">Confirm</button>
                 <button class="btn btn-warning btn-sm" type="button"
-                ng-click="isRemoveCollapsed = !isRemoveCollapsed;">Cancel</button>
+                  ng-click="isRemoveCollapsed = !isRemoveCollapsed;">Cancel</button>
               </div>
             </div>
           </div>

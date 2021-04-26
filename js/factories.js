@@ -99,6 +99,12 @@ function initApis(cache, awsCredentials) {
       price: warrant.price,
       estimatedPrice: null,
       shareEstimatedPrice: warrant.estimatedSharePrice,
+      priceSteps: {
+        p5: {sharePrice: null, warrantPrice: null, warrantProfit: null},
+        p10: {sharePrice: null, warrantPrice: null, warrantProfit: null},
+        p15: {sharePrice: null, warrantPrice: null, warrantProfit: null},
+        p20: {sharePrice: null, warrantPrice: null, warrantProfit: null},
+      },
       editor: {
         estimatedPrice: {
           editMode: false,
@@ -120,6 +126,18 @@ function initApis(cache, awsCredentials) {
         },
       },
     };
+    iWarrant.priceSteps.p5.sharePrice = iWarrant.sharePrice * 1.05;
+    iWarrant.priceSteps.p5.warrantPrice = (iWarrant.priceSteps.p5.sharePrice - iWarrant.exercisePrice) / iWarrant.ratio;
+    iWarrant.priceSteps.p5.warrantProfit = (iWarrant.priceSteps.p5.warrantPrice/iWarrant.price - 1) * 100;
+    iWarrant.priceSteps.p10.sharePrice = iWarrant.sharePrice * 1.1;
+    iWarrant.priceSteps.p10.warrantPrice = (iWarrant.priceSteps.p10.sharePrice - iWarrant.exercisePrice) / iWarrant.ratio;
+    iWarrant.priceSteps.p10.warrantProfit = (iWarrant.priceSteps.p10.warrantPrice/iWarrant.price - 1) * 100;
+    iWarrant.priceSteps.p15.sharePrice = iWarrant.sharePrice * 1.15;
+    iWarrant.priceSteps.p15.warrantPrice = (iWarrant.priceSteps.p15.sharePrice - iWarrant.exercisePrice) / iWarrant.ratio;
+    iWarrant.priceSteps.p15.warrantProfit = (iWarrant.priceSteps.p15.warrantPrice/iWarrant.price - 1) * 100;
+    iWarrant.priceSteps.p20.sharePrice = iWarrant.sharePrice * 1.2;
+    iWarrant.priceSteps.p20.warrantPrice = (iWarrant.priceSteps.p20.sharePrice - iWarrant.exercisePrice) / iWarrant.ratio;
+    iWarrant.priceSteps.p20.warrantProfit = (iWarrant.priceSteps.p20.warrantPrice/iWarrant.price - 1) * 100;
     iWarrant.upDown = (iWarrant.price / iWarrant.referencePrice - 1) * 100;
     iWarrant.breakEvenPrice = iWarrant.price * iWarrant.ratio + iWarrant.exercisePrice;
     iWarrant.currentProfit = (1 - iWarrant.breakEvenPrice / iWarrant.sharePrice) * 100;
