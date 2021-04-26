@@ -90,6 +90,55 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
     $scope.stopAutoRefresh();
   });
 
+    /*
+  ======================================================================================================================
+  = Estimated price editors                                                                                            =
+  ======================================================================================================================
+  */
+  $scope.updateEstimatedPrices = function () {
+    GlobalService.apis.updateEstimatedPrices()
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
+  }
+
+  function resetEditor(warrant) {
+    warrant.editor.estimatedPrice = {
+      editMode: false,
+      newSharePrice: null,
+      newShareProfit: null,
+      newWarrantPrice: null,
+      newWarrantProfit: null,
+    };
+  }
+  $scope.openEstimatedPriceEditor = function (warrant) {
+    DEBUG.log('openEstimatedPriceEditor');
+    warrant.editor.estimatedPrice.editMode = true;
+  };
+  $scope.cancelEstimatedPriceEditor = function (warrant) {
+    DEBUG.log('closeEstimatedPriceEditor');
+    resetEditor(warrant);
+  };
+  $scope.editEstimatedPrice = function (warrant) {
+    DEBUG.log('editEstimatedPrice');
+    warrant.editor.estimatedPrice.newWarrantPrice = (parseFloat(warrant.editor.estimatedPrice.newSharePrice) - warrant.exercisePrice) / warrant.ratio;
+    warrant.editor.estimatedPrice.newWarrantProfit = (warrant.editor.estimatedPrice.newWarrantPrice / warrant.price - 1) * 100;
+    warrant.editor.estimatedPrice.newShareProfit = (warrant.editor.estimatedPrice.newSharePrice / warrant.sharePrice - 1) * 100;
+  };
+  $scope.saveEstimatedPrice = function (warrant) {
+    DEBUG.log('saveEstimatedPrice');
+    if (warrant.editor.estimatedPrice.newSharePrice) {
+      let newSharePrice = parseFloat(warrant.editor.estimatedPrice.newSharePrice);
+      if (warrant.shareEstimatedPrice != newSharePrice) {
+        GlobalService.cache.cachedEstimatedPrices[warrant.warrant] = newSharePrice;
+        warrant.shareEstimatedPrice = newSharePrice;
+        warrant.shareEstimatedProfit = (newSharePrice / warrant.sharePrice - 1) * 100;
+        warrant.estimatedPrice = warrant.editor.estimatedPrice.newWarrantPrice;
+        warrant.estimatedProfit = warrant.editor.estimatedPrice.newWarrantProfit;
+        GlobalService.estimatedPriceToPost();
+      }
+    }
+    resetEditor(warrant);
+  };
+
   /*
   ======================================================================================================================
   = Warrant Info Popup                                                                                                 =
