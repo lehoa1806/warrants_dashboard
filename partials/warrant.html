@@ -4,33 +4,37 @@
       <div class="card-body" style="height: 288px;">
         <div spinner-loader load-spinner={{loadSpinner}}></div>
         <table class="table table-striped table-bordered table-hover">
+          <colgroup>
+            <col width="50%" />
+            <col width="50%" />
+          </colgroup>
           <tr>
-            <th>Provider:</th>
+            <td>Provider:</td>
             <td>{{warrant.provider}}</td>
           </tr>
           <tr>
-            <th>Expiration:</th>
+            <td>Expiration:</td>
             <td>{{warrant.expirationDate}}</td>
           </tr>
           <tr>
-            <th>Exercise price:</th>
+            <td>Exercise price:</td>
             <td>{{warrant.exercisePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
           </tr>
           <tr>
-            <th>Ratio:</th>
+            <td>Ratio:</td>
             <td>{{warrant.ratio}}</td>
           </tr>
           <tr>
-            <th>Reference price:</th>
+            <td>Reference price:</td>
             <td style="color:orange;"><b>{{warrant.referencePrice.toLocaleString(undefined, {maximumFractionDigits:
                 0})}}</b></td>
           </tr>
           <tr>
-            <th>Warrant price :</th>
+            <td>Warrant price :</td>
             <td style="color:blue;"><b>{{warrant.price.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
           </tr>
           <tr>
-            <th>Up/Down:</th>
+            <td>Up/Down:</td>
             <td ng-style="{ color: warrant.upDown > 0 ? 'green': 'red' };"><b>{{(warrant.upDown).toFixed(2)}}%</b></td>
           </tr>
         </table>
@@ -43,23 +47,23 @@
         <div spinner-loader load-spinner={{loadSpinner}}></div>
         <table class="table table-striped table-bordered table-hover">
           <tr>
-            <th>Break-even price:</th>
+            <td>Break-even price:</td>
             <td ng-style="{ color: warrant.breakEvenPrice > warrant.sharePrice ? 'red': 'green' };">
               <b>{{warrant.breakEvenPrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b>
             </td>
           </tr>
           <tr>
-            <th>Share price :</th>
+            <td>Share price :</td>
             <td><b>{{warrant.sharePrice.toLocaleString(undefined, {maximumFractionDigits: 0})}}</b></td>
           </tr>
           <tr>
-            <th>Curr. profit/loss (%):</th>
+            <td>Curr. profit/loss (%):</td>
             <td ng-style="{ color: warrant.currentProfit > 0 ? 'green': 'red' };">
               <b>{{(warrant.currentProfit).toFixed(2)}}%</b>
             </td>
           </tr>
           <tr>
-            <th>Est. share price:</th>
+            <td>Est. share price:</td>
             <td>
               <div class="clearfix">
                 <span
@@ -84,24 +88,24 @@
             </td>
           </tr>
           <tr>
-            <th>Est. share profit:</th>
+            <td>Est. share profit:</td>
             <td
               ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit) > 0 ? 'green': 'red' };">
               <b>{{(warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit).toFixed(2)}}%</b>
             </td>
           </tr>
           <tr>
-            <th>Est. warrant price:</th>
+            <td>Est. warrant price:</td>
             <td style="color:darkslateblue;">
               <b>{{(warrant.editor.popUpEstimatedPrice.newWarrantPrice||warrant.estimatedPrice).toLocaleString(undefined,
                 {maximumFractionDigits: 0})}}</b>
             </td>
           </tr>
           <tr>
-            <th>Est. warrant profit:</th>
+            <td>Est. warrant profit:</td>
             <td
               ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit) > 0 ? 'green': 'red' };">
-              <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
+              <b>{{(warrant.editor.popUpEstimatedPrice.newWarrantProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
             </td>
           </tr>
         </table>
@@ -109,7 +113,7 @@
     </div>
   </div>
 
-  <div class="col-xl-1-3 .col-md-12">
+  <div class="col-xl-3-8 .col-md-12">
     <div class="card border-left-primary shadow h-100 py-2">
       <div class="card-body" style="height: 288px;">
         <div spinner-loader load-spinner={{loadSpinner}}></div>
@@ -226,7 +230,7 @@
       </div>
     </div>
   </div>
-  <div class="col-xl-1-4 .col-md-12">
+  <div class="col-xl-5-24 .col-md-12">
     <div class="card border-left-info shadow h-100 py-2">
       <div class="card-body" style="height: 288px;">
         <div spinner-loader load-spinner={{loadSpinner}}></div>
@@ -238,9 +242,9 @@
           </colgroup>
           <thead>
             <tr>
-              <th width="" style="text-align:center;">#</th>
-              <th width="" style="text-align:center;">Buying price</th>
-              <th width="" style="text-align:center;">Profit</th>
+              <td width="" style="text-align:center;">#</td>
+              <td width="" style="text-align:center;">Buying price</td>
+              <td width="" style="text-align:center;">Profit</td>
             </tr>
           </thead>
           <tbody>
@@ -277,14 +281,13 @@
           <div data-ng-show="$state.current.name === 'root.warrants'">
             <span class="pull-left"><b>Add to Watchlist:</b></span>
             <div class="input-group col-xl-1-1 py-2">
-              <span class="input-group-addon"><b>Watchlist</b></span>
+              <span class="input-group-addon"><i class="icomoon icon-bookmarks"></i></span>
               <select class="form-control" ng-model="watchlist" required>
                 <option ng-repeat="(watchlist, warrants) in GlobalService.cache.watchlists">{{watchlist}}</option>
               </select>
             </div>
             <div class="pull-right">
-              <button class="btn btn-primary btn-sm" type="submit"
-                ng-click="addWarrantToWatchlist(warrant);">Submit</button>
+              <button class="btn btn-primary btn-sm" type="submit" data-ng-show="watchlist" ng-click="addWarrantToWatchlist(warrant);">Submit</button>
             </div>
           </div>
           <div data-ng-show="$state.current.name === 'root.watchlists' && watchlist.watchlist !== 'holding'">

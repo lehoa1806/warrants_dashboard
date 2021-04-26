@@ -86,7 +86,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   = Filter                                                                                                             =
   ======================================================================================================================
   */
-  $scope.warrantFilter = { startDate: null, endDate: null };
+  $scope.warrantFilter = { startDate: null, endDate: null, profitLow: null, profitHigh: null };
   var rendering = false;
   var renderCallback = function () {
     rendering = true;
@@ -105,6 +105,18 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   $scope.$watch('warrantFilter.endDate', function () {
     if ($scope.warrantFilter.endDate == '' || $scope.warrantFilter.endDate == 'Invalid date') {
       $scope.warrantFilter.endDate = null;
+    }
+    render();
+  });
+  $scope.$watch('warrantFilter.profitLow', function () {
+    if ($scope.warrantFilter.profitLow == '') {
+      $scope.warrantFilter.profitLow = null;
+    }
+    render();
+  });
+  $scope.$watch('warrantFilter.profitHigh', function () {
+    if ($scope.warrantFilter.profitHigh == '') {
+      $scope.warrantFilter.profitHigh = null;
     }
     render();
   });
@@ -146,7 +158,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     DEBUG.log('editEstimatedPrice');
     warrant.editor.estimatedPrice.newWarrantPrice = (parseFloat(warrant.editor.estimatedPrice.newSharePrice) - warrant.exercisePrice) / warrant.ratio;
     warrant.editor.estimatedPrice.newWarrantProfit = (warrant.editor.estimatedPrice.newWarrantPrice / warrant.price - 1) * 100;
-    warrant.editor.estimatedPrice.shareEstimatedProfit = (warrant.editor.estimatedPrice.newSharePrice / warrant.sharePrice - 1) * 100;
+    warrant.editor.estimatedPrice.newShareProfit = (warrant.editor.estimatedPrice.newSharePrice / warrant.sharePrice - 1) * 100;
   };
   $scope.saveEstimatedPrice = function (warrant) {
     DEBUG.log('saveEstimatedPrice');
