@@ -96,35 +96,24 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
       $scope.vm.dtInstance.rerender(renderCallback);
     }
   };
-  $scope.$watch('warrantFilter.startDate', function () {
+  $scope.applyFilter = function () {
     if ($scope.warrantFilter.startDate == '' || $scope.warrantFilter.startDate == 'Invalid date') {
       $scope.warrantFilter.startDate = null;
     }
-    render();
-  });
-  $scope.$watch('warrantFilter.endDate', function () {
     if ($scope.warrantFilter.endDate == '' || $scope.warrantFilter.endDate == 'Invalid date') {
       $scope.warrantFilter.endDate = null;
     }
-    render();
-  });
-  $scope.$watch('warrantFilter.profitLow', function () {
     if ($scope.warrantFilter.profitLow == '') {
       $scope.warrantFilter.profitLow = null;
     }
-    render();
-  });
-  $scope.$watch('warrantFilter.profitHigh', function () {
     if ($scope.warrantFilter.profitHigh == '') {
       $scope.warrantFilter.profitHigh = null;
     }
     render();
-  });
-  $scope.applyFilter = function () {
-    render();
   }
   $scope.resetFilter = function () {
-    $scope.warrantFilter = { startDate: null, endDate: null };
+    $scope.warrantFilter = { startDate: null, endDate: null, profitLow: null, profitHigh: null };
+    render();
   }
 
   /*

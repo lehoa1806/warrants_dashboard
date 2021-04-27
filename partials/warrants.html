@@ -24,7 +24,8 @@
       <h4 class="panel-title pull-left" style="padding-top: 7.5px;">VN30 Warrants</h4>
       <div class="btn-toolbar align-middle pull-right" role="toolbar">
         <div class="btn-group">
-          <button type="button" id="EstimatedPriceToPost" class="btn {{GlobalService.apis.estimatedReadyToPost? 'btn-warning': 'btn-success'}}"
+          <button type="button" id="EstimatedPriceToPost"
+            class="btn {{GlobalService.apis.estimatedReadyToPost? 'btn-warning': 'btn-success'}}"
             title="Save the Estimated Prices to Database"
             ng-click="updateEstimatedPrices(); GlobalService.estimatedPricePostDone();"
             style="pointer-events: auto; height: 33px;"><span class="glyphicon glyphicon-saved"></span>
@@ -61,62 +62,72 @@
     <div class="panel-body">
       <!-- Filter -->
       <div class="row">
-        <div class="col-xl-1-6"></div>
-        <div class="col-xl-2-3">
+        <div class="col-xl-1-8"></div>
+        <div class="col-xl-3-4">
           <form>
-            <div class="col-xl-1-8 col-md-6">
-              <button type="button" class="btn btn-info">Expiration: <i class="glyphicon glyphicon-calendar"></i>
-              </button>
-            </div>
-            <div class="col-xl-5-24 col-md-6">
-              <div class="form-group">
-                <div class='input-group date'>
-                  <span class="input-group-addon">From: </span>
-                  <input type='text' datetime-picker ng-model="warrantFilter.startDate"
-                    class="form-control text-center" />
+            <div class="col-xl-11-24 col-md-6">
+              <div class="col-xl-1-4 col-md-6">
+                <button type="button" class="btn btn-info">Expiration: <i class="glyphicon glyphicon-calendar"></i>
+                </button>
+              </div>
+              <div class="col-xl-5-12 col-md-6">
+                <div class="form-group">
+                  <div class='input-group date'>
+                    <span class="input-group-addon">From: </span>
+                    <input type='text' datetime-picker ng-model="warrantFilter.startDate"
+                      class="form-control text-center" />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-xl-1-6 col-md-6">
-              <div class="form-group">
-                <div class='input-group date'>
-                  <span class="input-group-addon">To:</span>
-                  <input type='text' datetime-picker ng-model="warrantFilter.endDate"
-                    class="form-control text-center" />
+              <div class="col-xl-1-3 col-md-6">
+                <div class="form-group">
+                  <div class='input-group date'>
+                    <span class="input-group-addon">To:</span>
+                    <input type='text' datetime-picker ng-model="warrantFilter.endDate"
+                      class="form-control text-center" />
+                  </div>
                 </div>
               </div>
             </div>
             <div class="col-xl-1-24 col-md-6"></div>
-            <div class="col-xl-1-8 col-md-6">
-              <button type="button" class="btn btn-info">Curr. profit: <i class="fa fa-percent"></i>
-              </button>
-            </div>
-            <div class="col-xl-1-6 col-md-6">
-              <div class="form-group">
-                <div class='input-group date'>
-                  <span class="input-group-addon">From: </span>
-                  <input type="number" class="form-control text-center" ng-model="warrantFilter.profitLow" required />
+            <div class="col-xl-3-8 col-md-6">
+              <div class="col-xl-7-24 col-md-6">
+                <button type="button" class="btn btn-info">Curr. profit: <i class="fa fa-percent"></i>
+                </button>
+              </div>
+              <div class="col-xl-3-8 col-md-6">
+                <div class="form-group">
+                  <div class='input-group date'>
+                    <span class="input-group-addon">From: </span>
+                    <input type="number" class="form-control text-center" ng-model="warrantFilter.profitLow" required />
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-1-3 col-md-6">
+                <div class="form-group">
+                  <div class='input-group date'>
+                    <span class="input-group-addon">To:</span>
+                    <input type="number" class="form-control text-center" ng-model="warrantFilter.profitHigh"
+                      required />
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-xl-1-8 col-md-6">
-              <div class="form-group">
-                <div class='input-group date'>
-                  <span class="input-group-addon">To:</span>
-                  <input type="number" class="form-control text-center" ng-model="warrantFilter.profitHigh" required />
-                </div>
+            <div class="col-xl-1-24 col-md-6"></div>
+            <div class="col-xl-1-12 col-md-6">
+              <div class="btn-group pull-right center-block media-middle">
+                <button type="reset" class="btn btn-success" style="pointer-events: auto;"><span
+                    ng-click="applyFilter();" class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="reset" class="btn btn-warning" style="pointer-events: auto;"><span
+                    ng-click="resetFilter();" class="glyphicon glyphicon-repeat"></span>
+                </button>
               </div>
-            </div>
-            <div class="col-xl-1-24 col-md-6">
-              <button type="reset" class="btn btn-warning" style="pointer-events: auto;"><span ng-click="resetFilter();"
-                  class="glyphicon glyphicon-repeat"></span>
-              </button>
             </div>
           </form>
         </div>
-        <div class="col-xl-1-6"></div>
+        <div class="col-xl-1-8"></div>
       </div>
-
       <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;" datatable="ng"
         dt-options="vm.dtOptions" dt-instance="vm.dtInstance">
         <colgroup>
