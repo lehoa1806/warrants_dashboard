@@ -12,7 +12,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
   $scope.$state = $state;
   $scope.GlobalService = GlobalService;
   $scope.vm = {};
-  $scope.vm.dtInstance = {};
+  $scope.vm.dtInstances = {portfolio: {}, history: {}};
   $scope.vm.dtOptions = DTOptionsBuilder.newOptions()
     .withOption('order', [0, 'asc'])
     .withOption('destroy', true)
@@ -38,7 +38,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     GlobalService.apis.pullRealtimeWarrantInfo()
       .then(function () {
         loadPortfolio($scope, GlobalService);
-        loadStats();
+        loadStats($scope);
       })
       .catch(function (error) { DEBUG.log(error); })
       .finally(function () {
@@ -81,6 +81,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     quantity: null,
     recordId: getASimpleRandomString(),
     acquisitionPrice: null,
+    editable: true,
   };
   $scope.addNewTradingRecord = function () {
     if (!$scope.tradingRecord.warrant || !$scope.tradingRecord.action || !$scope.tradingRecord.date || !$scope.tradingRecord.price || !$scope.tradingRecord.quantity) return;
@@ -120,7 +121,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     }
     // Update history and portfolio
     let historyPromise = GlobalService.apis.updateTradingHistory({ action: 'insert', record: $scope.tradingRecord });
-    let portfolioPromise = GlobalService.apis.updateUserInfo([iWarrant], null);
+    let portfolioPromise = GlobalService.apis.updateUserInfo({ action: 'insert', data: iWarrant }, null);
     Promise.all([historyPromise, portfolioPromise])
       .then(function () {
         loadPortfolio($scope, GlobalService);
@@ -138,6 +139,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
           quantity: null,
           recordId: getASimpleRandomString(),
           acquisitionPrice: null,
+          editable: true,
         };
       })
       .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
@@ -165,7 +167,29 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     record.price = $scope.tempHistory.price;
     record.acquisitionPrice = $scope.tempHistory.acquisitionPrice;
     record.realizedLossProfit = $scope.tempHistory.realizedLossProfit;
+    record.editable = $scope.tempHistory.editable;
     $scope.tempHistory = {};
+  };
+  $scope.lockHistory = function (record) {
+    DEBUG.log(record); GlobalService.debug.error(record);
+    record.editable = false;
+    // Update history and portfolio
+    let historyPromise = GlobalService.apis.updateTradingHistory({ action: 'insert', record: record });
+    let allLocked = true;
+    for (let iHistory of GlobalService.cache.history) {
+      if (record.warrant == iHistory.warrant && iHistory.editable) {
+        allLocked = false;
+        break;
+      }
+    }
+    let tPortfolio = getProperty(GlobalService.cache.portfolio, record.warrant, {quantity: -1});
+    let portfolioPromise = tPortfolio.quantity == 0 ? GlobalService.apis.updateUserInfo({ action: 'delete', data: record }, null) : Promise.resolve();
+    Promise.all([historyPromise, portfolioPromise])
+      .then(function () { })
+      .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
+      .finally(function () {
+        $scope.$apply();
+      });
   };
   $scope.saveHistory = function (record) {
     DEBUG.log("editHistory here!!!");
@@ -244,7 +268,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       }
       // Update history and portfolio
       let historyPromise = GlobalService.apis.updateTradingHistory({ action: 'insert', record: record });
-      let portfolioPromise = GlobalService.apis.updateUserInfo([record], null);
+      let portfolioPromise = GlobalService.apis.updateUserInfo({ action: 'insert', data: iWarrant }, null);
       Promise.all([historyPromise, portfolioPromise])
         .then(function () {
           loadPortfolio($scope, GlobalService);

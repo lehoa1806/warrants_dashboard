@@ -171,7 +171,7 @@
         <div class="col-xl-1-12"></div>
       </div>
       <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;" datatable="ng"
-        dt-options="vm.dtOptions" dt-instance="vm.dtInstance">
+        dt-options="vm.dtOptions" dt-instance="vm.dtInstances.portfolio">
         <colgroup>
           <col width="" />
           <col width="" />
@@ -228,7 +228,7 @@
     </div>
     <div class="panel-body">
       <table class="table table-striped table-bordered table-hover" style="text-align:center;width:100%;" datatable="ng"
-        dt-options="vm.dtOptions" dt-instance="vm.dtInstance">
+        dt-options="vm.dtOptions" dt-instance="vm.dtInstances.history">
         <colgroup>
           <col width="" />
           <col width="" />
@@ -286,12 +286,15 @@
             <td>{{record.realizedLossProfit.toLocaleString(undefined, {maximumFractionDigits: 0})}}</td>
             <td>
               <div class="center-block media-middle">
-                <button type="submit" data-ng-hide="historyEditor" class="btn btn-default btn-xs"
+                <i data-ng-hide="record.editable" class="glyphicon glyphicon-lock"></i>
+                <button type="submit" data-ng-hide="!record.editable || historyEditor" class="btn btn-default btn-xs"
                   ng-click="historyEditor = true; editHistory(record)"><i
                     class="glyphicon glyphicon-pencil"></i></button>
+                <button type="submit" data-ng-hide="!record.editable || historyEditor" class="btn btn-info btn-xs"
+                  ng-click="lockHistory(record)"><i class="glyphicon glyphicon-lock"></i></button>
                 <button type="submit" data-ng-show="historyEditor" class="btn btn-success btn-xs"
                   ng-click="historyEditor = false; saveHistory(record)"><i class="glyphicon glyphicon-ok"></i></button>
-                <button type="submit" data-ng-show="historyEditor" class="btn btn-danger btn-xs"
+                <button type="submit" data-ng-show="historyEditor" class="btn btn-warning btn-xs"
                   ng-click="historyEditor = false; resetHistory(record)"><i
                     class="glyphicon glyphicon-remove"></i></button>
               </div>

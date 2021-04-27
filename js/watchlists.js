@@ -13,7 +13,7 @@ app.controller('WatchlistRenameController', function ($scope, $timeout, $uibModa
       warrants: GlobalService.cache.watchlists[$scope.watchlistName] || [],
       newName: $scope.watchlistNewName,
     }
-    GlobalService.apis.updateUserInfo(null, [watchlist]);
+    GlobalService.apis.updateUserInfo(null, { action: 'update', data: watchlist });
     delete Object.assign(GlobalService.cache.watchlists, { [$scope.watchlistNewName]: GlobalService.cache.watchlists[$scope.watchlistName] })[$scope.watchlistName];
     GlobalService.cache.watchlists[$scope.watchlistNewName].warrant = $scope.watchlistNewName;
     $uibModalInstance.close(watchlist);
@@ -228,7 +228,7 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
       name: $scope.watchlist,
       warrants: warrants,
     }
-    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    GlobalService.apis.updateUserInfo(null, { action: 'insert', data: tWatchlist });
     let message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
     GlobalService.debug.info(message);
   };
@@ -263,11 +263,15 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
     $timeout(function () {
       GlobalService.apis.updateUserInfo(
         null,
-        [{
-          name: newWatchlist.watchlist,
-          warrants: newWatchlist.warrants,
-          newName: newWatchlist.watchlist,
-        }]);
+        {
+          action: 'insert',
+          data: {
+            name: newWatchlist.watchlist,
+            warrants: newWatchlist.warrants,
+            newName: newWatchlist.watchlist,
+          }
+        }
+      );
       $scope.watchlists.push(newWatchlist);
       GlobalService.cache.watchlists[newWatchlist.watchlist] = newWatchlist.warrants;
     });
@@ -313,7 +317,6 @@ app.controller('WatchlistsController', function ($scope, $state, $compile, $inte
 
   Promise.all([userInfoPromise, warrantInfoPromise])
     .then(function () {
-      $scope.history = GlobalService.cache.history;
       loadWatchlists($scope, GlobalService);
       loadPortfolio($scope, GlobalService);
       $scope.setDtInstances();

@@ -78,7 +78,7 @@ app.controller('WarrantEditorController', function ($scope, $state, GlobalServic
       name: $scope.watchlist,
       warrants: warrants,
     }
-    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    GlobalService.apis.updateUserInfo(null, {action: 'insert', data: tWatchlist});
     message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
     GlobalService.debug.info(message);
   };
@@ -97,7 +97,7 @@ app.controller('WarrantEditorController', function ($scope, $state, GlobalServic
       name: $scope.watchlist.watchlist,
       warrants: warrants,
     }
-    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    GlobalService.apis.updateUserInfo(null, {action: 'insert', data: tWatchlist});
     message = '"' + warrant.warrant + '" is removed from "' + $scope.watchlist.watchlist + '"';
     GlobalService.debug.info(message);
     $scope.icon.removeClass('glyphicon-minus-sign').addClass('glyphicon-plus-sign');

@@ -25,7 +25,7 @@ app.controller('AddWarrantToWatchlist', function ($scope, $uibModalInstance, war
       name: $scope.watchlist,
       warrants: warrants,
     }
-    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    GlobalService.apis.updateUserInfo(null, {action: 'insert', data: tWatchlist});
     message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
     GlobalService.debug.info(message);
     $uibModalInstance.close();
@@ -265,7 +265,7 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
       name: $scope.watchlist,
       warrants: warrants,
     }
-    GlobalService.apis.updateUserInfo(null, [tWatchlist]);
+    GlobalService.apis.updateUserInfo(null, {action: 'insert', data: tWatchlist});
     message = '"' + warrant.warrant + '" is added "' + $scope.watchlist + '"';
     GlobalService.debug.info(message);
   };

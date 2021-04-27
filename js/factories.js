@@ -202,22 +202,28 @@ function initApis(cache, awsCredentials) {
     /* Home: Update portfolio
        Watchlists: Update watchlists
      */
-    updateUserInfo: function (portfolio, watchlists) {
-      // [{
-      //    warrant: 'WARRANT0',
-      //    quantity: 100,
-      //    acquisitionPrice: 9999,
-      // }]
-      //
-      // [{
-      //    name: WATCHLIST1,
-      //    warrants: ['WARRANT1', 'WARRANT2'],
-      //    newName: WATCHLIST2,
-      // }]
+    updateUserInfo: function (portfolio, watchlist) {
+      // {
+      //    data: {
+      //      warrant: 'WARRANT0',
+      //      quantity: 100,
+      //      acquisitionPrice: 9999,
+      //    },
+      //    action: 'insert',  // 'delete'
+      // }
+
+      // {
+      //    data: {
+      //      name: WATCHLIST1,
+      //      warrants: ['WARRANT1', 'WARRANT2'],
+      //      newName: WATCHLIST2,
+      //    },
+      //    action: 'insert',  // 'delete'
+      // }
       return new Promise(function (resolve, reject) {
         let userInfo = {}
         if (portfolio && Object.keys(portfolio).length > 0) userInfo.portfolio = portfolio;
-        if (watchlists && Object.keys(watchlists).length > 0) userInfo.watchlists = watchlists;
+        if (watchlist && Object.keys(watchlist).length > 0) userInfo.watchlist = watchlist;
         if (Object.keys(userInfo).length == 0) {
           let message = 'updateUserInfo: Nothing to update !!!'
           DEBUG.log(message);
@@ -265,7 +271,7 @@ function initApis(cache, awsCredentials) {
               reject(message);
             } else {
               DEBUG.log('loadTradingHistory: Data returned !!!');
-              cache.history = response.data.records;
+              cache.history = angular.copy(response.data.records);
               resolve(response);
             }
           })
@@ -279,7 +285,7 @@ function initApis(cache, awsCredentials) {
     /* Home: Update history */
     updateTradingHistory: function (records) {
       // {
-      //    action: 'insert',
+      //    action: 'insert',  // 'delete
       //    record: {date: '2021-06-18',
       //             recordId: 'XYZ123CBA',
       //             warrant: 'WARRANTID1',
