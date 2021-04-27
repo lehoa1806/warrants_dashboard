@@ -37,7 +37,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
   $scope.reloadWarrantInfo = function () {
     GlobalService.apis.pullRealtimeWarrantInfo()
       .then(function () {
-        loadPortfolio(GlobalService.cache);
+        loadPortfolio($scope, GlobalService);
         loadStats();
       })
       .catch(function (error) { DEBUG.log(error); })
