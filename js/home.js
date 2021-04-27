@@ -126,11 +126,8 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       .then(function () {
         loadPortfolio($scope, GlobalService);
         loadStats($scope);
-        GlobalService.cache.history.push($scope.tradingRecord);
-        DEBUG.log('$scope.history');
-        DEBUG.log($scope.history);
-        GlobalService.debug.error($scope.history);
-        DEBUG.log('$scope.history');
+        GlobalService.cache.history.push(angular.copy($scope.tradingRecord));
+        $scope.history = angular.copy(GlobalService.cache.history);
         $scope.tradingRecord = {
           action: null,
           warrant: null,
@@ -171,7 +168,6 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     $scope.tempHistory = {};
   };
   $scope.lockHistory = function (record) {
-    DEBUG.log(record); GlobalService.debug.error(record);
     record.editable = false;
     // Update history and portfolio
     let historyPromise = GlobalService.apis.updateTradingHistory({ action: 'insert', record: record });
@@ -183,9 +179,13 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
       }
     }
     let tPortfolio = getProperty(GlobalService.cache.portfolio, record.warrant, {quantity: -1});
-    let portfolioPromise = tPortfolio.quantity == 0 ? GlobalService.apis.updateUserInfo({ action: 'delete', data: record }, null) : Promise.resolve();
+    let portfolioPromise = allLocked && tPortfolio.quantity == 0 ? GlobalService.apis.updateUserInfo({ action: 'delete', data: record }, null) : Promise.resolve();
     Promise.all([historyPromise, portfolioPromise])
-      .then(function () { })
+      .then(function () {
+        let message = 'This record was locked. You won\'t be able to edit it any further';
+        DEBUG.log(message);
+        GlobalService.debug.info(message);
+      })
       .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
       .finally(function () {
         $scope.$apply();
@@ -305,7 +305,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
 
   Promise.all([historyPromise, portfolioPromise, warrantInfoPromise])
     .then(function () {
-      $scope.history = GlobalService.cache.history;
+      $scope.history = angular.copy(GlobalService.cache.history);
       loadWatchlists($scope, GlobalService);
       loadPortfolio($scope, GlobalService);
       loadStats($scope);
