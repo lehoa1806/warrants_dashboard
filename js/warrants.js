@@ -89,10 +89,11 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
   $scope.warrantFilter = { startDate: null, endDate: null, profitLow: null, profitHigh: null };
   var rendering = false;
   var renderCallback = function () {
-    rendering = true;
+    rendering = false;
   }
   var render = function () {
     if ($scope.vm.dtInstance.rerender && !rendering) {
+      rendering = true;
       $scope.vm.dtInstance.rerender(renderCallback);
     }
   };
