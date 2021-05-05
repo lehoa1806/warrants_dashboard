@@ -477,6 +477,12 @@ var initGlobalService = function () {
     awsCredentials: awsCredentials,
     cache: cache,
     debug: debug,
+    cleanUp: function () {
+      awsCredentials = initAwsCredentials();
+      cache = initGlobalCache();
+      apis = initApis(cache, awsCredentials);
+      debug = initDebug();
+    },
     estimatedPriceToPost: function () {
       apis.estimatedReadyToPost = true;
       var element = angular.element(document.querySelector('#EstimatedPriceToPost'));

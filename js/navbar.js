@@ -12,7 +12,7 @@ app.controller('NavbarController', function ($scope, $state, GlobalService) {
 
   $scope.onLogoutClicked = function () {
     DEBUG.log('NavbarController: Logged out');
-    GlobalService.awsCredentials.resetData();
+    GlobalService.cleanUp();
     $state.go('root.login');
     return;
   };

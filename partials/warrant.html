@@ -216,7 +216,7 @@
             </tr>
             <tr
               ng-style="{ color: (warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit) > 0 ? 'green': 'red' };">
-              <td>Est. <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}</b>%
+              <td>Est. <b>{{(warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit).toFixed(2)}}%</b>
               </td>
               <td><b>{{(warrant.editor.popUpEstimatedPrice.newSharePrice||warrant.shareEstimatedPrice).toLocaleString(undefined,
                   {maximumFractionDigits: 0})}}</b></td>
@@ -224,7 +224,7 @@
                 <b>N/A</b>
               </td>
               <td>
-                <b>{{(warrant.editor.popUpEstimatedPrice.newShareProfit||warrant.shareEstimatedProfit).toFixed(2)}}%</b>
+                <b>{{(warrant.editor.popUpEstimatedPrice.newProfit||warrant.estimatedProfit).toFixed(2)}}%</b>
               </td>
               <td><b>{{(warrant.editor.popUpEstimatedPrice.newWarrantPrice||warrant.estimatedPrice).toLocaleString(undefined,
                   {maximumFractionDigits: 0})}}</b></td>
