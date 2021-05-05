@@ -173,7 +173,7 @@ app.controller('HomeController', function ($scope, $state, $interval, GlobalServ
     let historyPromise = GlobalService.apis.updateTradingHistory({ action: 'insert', record: record });
     let allLocked = true;
     for (let iHistory of GlobalService.cache.history) {
-      if (record.warrant == iHistory.warrant && iHistory.editable) {
+      if (record.recordId != iHistory.recordId && record.warrant == iHistory.warrant && iHistory.editable) {
         allLocked = false;
         break;
       }
