@@ -77,6 +77,23 @@ app.filter('secondsToDateTime', function () {
   };
 });
 
+app.filter('warrantFilters', function () {
+  return function (warrants, warrantFilter) {
+    let now = new Date().toISOString().substring(0, 10);
+    DEBUG.log('Filter is called ' + now);
+    let filtered_warrants = []
+    for (let i = 0; i < warrants.length; i++) {
+      if (warrants[i].expirationDate < now) continue;
+      else if ((warrantFilter.startDate) && (warrants[i].expirationDate < warrantFilter.startDate)) continue;
+      else if ((warrantFilter.endDate) && (warrants[i].expirationDate > warrantFilter.endDate)) continue;
+      else if ((warrantFilter.profitLow) && (warrants[i].currentProfit < warrantFilter.profitLow)) continue;
+      else if ((warrantFilter.profitHigh) && (warrants[i].currentProfit > warrantFilter.profitHigh)) continue;
+      else filtered_warrants.push(warrants[i]);
+    }
+    return filtered_warrants.sort((a, b) => (a.warrant > b.warrant) - (b.warrant > a.warrant));
+  };
+});
+
 /*
 ========================================================================================================================
 = Start app                                                                                                            =

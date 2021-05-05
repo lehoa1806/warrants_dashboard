@@ -165,9 +165,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="warrant in warrantList"
-            ng-if="((!warrantFilter.startDate) || (warrant.expirationDate > warrantFilter.startDate)) && ((!warrantFilter.endDate) || (warrantFilter.endDate > warrant.expirationDate)) && ((!warrantFilter.profitLow) || (warrantFilter.profitLow <= warrant.currentProfit)) && ((!warrantFilter.profitHigh) || (warrantFilter.profitHigh > warrant.currentProfit))"
-            style="text-align:center;" ng-dblclick="addToWatchList(warrant);">
+          <tr ng-repeat="warrant in warrantList | warrantFilters:warrantFilter" style="text-align:center;"
+            ng-dblclick="addToWatchList(warrant);">
             <td><a class="green shortinfo" ng-click="warrantInfo(warrant, $event)" title="View calculator"><i
                   class="glyphicon glyphicon-plus-sign"></a></td>
             <td>{{warrant.warrant}}</td>
