@@ -327,6 +327,10 @@ app.controller('WarrantsController', function ($scope, $state, $timeout, $compil
     .then(function () {
       $scope.warrantList = Object.keys(GlobalService.cache.warrants).map(key => { return GlobalService.cache.warrants[key]; });
     })
+    .then(function () {
+      $scope.refresh = 3600;
+      $scope.startAutoRefresh();
+    })
     .catch(function (error) { DEBUG.log(error); GlobalService.debug.error(error); })
     .finally(function () {
       $scope.$apply();

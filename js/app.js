@@ -80,7 +80,6 @@ app.filter('secondsToDateTime', function () {
 app.filter('warrantFilters', function () {
   return function (warrants, warrantFilter) {
     let now = new Date().toISOString().substring(0, 10);
-    DEBUG.log('Filter is called ' + now);
     let filtered_warrants = []
     for (let i = 0; i < warrants.length; i++) {
       if (warrants[i].expirationDate < now) continue;

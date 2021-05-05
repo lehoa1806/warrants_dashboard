@@ -412,9 +412,11 @@ function initApis(cache, awsCredentials) {
     },
 
     /* WarrantScreener: Update estimated prices */
-    estimatedReadyToPost: estimatedReadyToPost,
+    estimatedNotReady: function () { estimatedReadyToPost = false; },
+    estimatedReady: function () { estimatedReadyToPost = true; },
     updateEstimatedPrices: function () {
       return new Promise(function (resolve, reject) {
+        DEBUG.log(estimatedReadyToPost);
         if (!estimatedReadyToPost) {
           let message = 'updateEstimatedPrices: No new data !!!'
           DEBUG.log(message);
@@ -484,12 +486,12 @@ var initGlobalService = function () {
       debug = initDebug();
     },
     estimatedPriceToPost: function () {
-      apis.estimatedReadyToPost = true;
+      apis.estimatedReady();
       var element = angular.element(document.querySelector('#EstimatedPriceToPost'));
       if (element.hasClass('btn-success')) element.removeClass('btn-success').addClass('btn-warning');
     },
     estimatedPricePostDone: function () {
-      apis.estimatedReadyToPost = false;
+      apis.estimatedNotReady();
       var element = angular.element(document.querySelector('#EstimatedPriceToPost'));
       if (element.hasClass('btn-warning')) element.removeClass('btn-warning').addClass('btn-success');
     },
